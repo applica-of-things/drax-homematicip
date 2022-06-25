@@ -9,14 +9,14 @@ class GenericDevice {
         fs.writeFile(configPath, JSON.stringify(config), (err) => {
             if (err) {
                 throw err;
-            }
-            new Keystore().instance().addConfig(config)
+            }            
             if (client != null){
 
-                this.client.login()
+                client.login()
                 .then(() => {
-                    this.client.saveKeystore({keys: config.keys})
+                    client.saveKeystore({keys: config.keys})
                     if (resolve != null){
+                        new Keystore().instance().addConfig(config)
                         resolve()
                     }
                 })

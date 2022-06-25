@@ -32,7 +32,7 @@ class Relay extends GenericDevice {
                     configurationPublishTopic: "configurations/hmip/" + this.sgtin,
                     statePublishTopic: "states/hmip",
                     initialState: {},
-                    name: "RELAY-" + this.address
+                    name: "RELAY-" + this.address + "-" + this.sgtin
                 }
                 this.drax.handshake(node).then((res) => {
                     console.log(res)

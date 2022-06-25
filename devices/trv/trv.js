@@ -33,7 +33,7 @@ class Trv extends GenericDevice {
                     configurationPublishTopic: "configurations/hmip/" + this.sgtin,
                     statePublishTopic: "states/hmip",
                     initialState: {},
-                    name: "TRV-" + this.address
+                    name: "TRV-" + this.address + "-" + this.sgtin
                 }
                 this.drax && this.drax.handshake(node).then((res) => {
                     console.log(res)                
@@ -63,19 +63,19 @@ class Trv extends GenericDevice {
     }
 
     state(){
-        // var callback1 = (data) => {
+        var callback1 = (data) => {
 
-        //     var callback2 = (data) => {
-        //         this.data = {...this.data, ...data}
-        //         console.log("DATA::", this.data)
-        //         this.sendState(this.data)
-        //     }
+            var callback2 = (data) => {
+                this.data = {...this.data, ...data}
+                console.log("DATA::", this.data)
+                this.sendState(this.data)
+            }
 
-        //     this.data = {...this.data, ...data}
-        //     this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, ...this.device}))
-        // }
+            this.data = {...this.data, ...data}
+            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, ...this.device}))
+        }
 
-        // this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-eTRV-B'}))
+        this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-eTRV-B'}))
     }
 
     sendState(data){
@@ -111,12 +111,12 @@ class Trv extends GenericDevice {
         var targetTemperature = config.targetTemperature
         var del = config.del
 
-        if (targetTemperature != null){
-            this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', parseFloat(targetTemperature))
-        }
-
         if (del == 1){
             this.ccu3.deleteDevice(this.address, DELETE_FLAG_RESET);
+        } else {
+            if (targetTemperature != null){
+                this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', parseFloat(targetTemperature))
+            }
         }
     }
 }

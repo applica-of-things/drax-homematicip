@@ -145,13 +145,11 @@ class Gateway extends GenericDevice {
     init() {
         try{
             this.ccu3.subscribe()
-            this.ccu3.setInstallMode(true)
-    
             this.schedule = new Schedule(config.ccu3.interval_min * 60 * 1000, this.timeListeners, this.ccu3, this.drax, this.sgtin, this.ip, this.client)
             this.schedule.init()
             this.schedule.start()
     
-            var devices = new Devices(null, this.client, this.ccu3, this.drax, this.sgtin, this.ip, this.schedule)
+            var devices = new Devices([], this.client, this.ccu3, this.drax, this.sgtin, this.ip, this.schedule)
             this.ccu3.addEventListener(devices)
             this.addConfigurationListener(devices)
     

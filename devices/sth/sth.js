@@ -32,7 +32,7 @@ class Sth extends GenericDevice {
                     configurationPublishTopic: "configurations/hmip/" + this.sgtin,
                     statePublishTopic: "states/hmip",
                     initialState: {},
-                    name: "STH-" + this.address
+                    name: "STH-" + this.address + "-" + this.sgtin
                 }
                 this.drax.handshake(node).then((res) => {
                     console.log(res)
