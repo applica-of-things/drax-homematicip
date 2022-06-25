@@ -116,7 +116,7 @@ class Trv extends GenericDevice {
         } else {
             if (targetTemperature != null){
                 try{
-                    targetTemperature = Number.parseFloat(targetTemperature).toFixed(1)
+                    targetTemperature = parseFloat(targetTemperature).toFixed(1)
                     this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', targetTemperature)
                 } catch (e){
                     console.log(e)
