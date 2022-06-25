@@ -6,28 +6,24 @@ class GenericDevice {
     constructor(){}
 
     updateConfig(config, client = null, resolve = null, reject = null){
-        fs.writeFile(configPath, JSON.stringify(config), (err) => {
-            if (err) {
-                throw err;
-            }            
-            if (client != null){
+        fs.writeFileSync(configPath, JSON.stringify(config));
+        if (client != null){
 
-                client.login()
-                .then(() => {
-                    client.saveKeystore({keys: config.keys})
-                    if (resolve != null){
-                        new Keystore().instance().addConfig(config)
-                        resolve()
-                    }
-                })
-                .catch((code) => {
-                    console.log(code)
-                    if (reject != null){
-                        reject()
-                    }
-                })
-            }
-        });
+            client.login()
+            .then(() => {
+                client.saveKeystore({keys: config.keys})
+                if (resolve != null){
+                    new Keystore().instance().addConfig(config)
+                    resolve()
+                }
+            })
+            .catch((code) => {
+                console.log(code)
+                if (reject != null){
+                    reject()
+                }
+            })
+        }
     }
 
     stateEvent(response){
