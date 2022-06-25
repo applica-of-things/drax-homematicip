@@ -3,7 +3,7 @@ const Http = require('./http/http');
 const bodyParser = require('body-parser')
 
 class Server {
-    constructor(host = "localhost", port = "4040"){
+    constructor(host = "localhost", port = "8088"){
         this.host = host
         this.port = port
         this.app = express()
