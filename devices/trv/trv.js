@@ -115,7 +115,12 @@ class Trv extends GenericDevice {
             this.ccu3.deleteDevice(this.address, DELETE_FLAG_RESET);
         } else {
             if (targetTemperature != null){
-                this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', parseFloat(targetTemperature))
+                try{
+                    targetTemperature = Number.parseFloat(targetTemperature).toFixed(1)
+                    this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', targetTemperature)
+                } catch (e){
+                    console.log(e)
+                }
             }
         }
     }
