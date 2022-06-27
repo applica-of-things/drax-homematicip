@@ -23,7 +23,7 @@ class Gtw extends GenericDevice {
 
     state(){
         var state = {
-            connected = true,
+            connected: true,
             ip: this.ip
         }
         try {
