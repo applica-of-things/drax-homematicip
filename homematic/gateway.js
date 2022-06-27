@@ -1,15 +1,14 @@
 const { Drax } = require("drax-sdk-nodejs");
 const { Keystore } = require("drax-sdk-nodejs/keystore");
 
-const { CCU3 } = require("./ccu3");
-var config = new Config().instance().getConfig()
-new Keystore().instance().addConfig(config)
-
-
 const { Devices } = require("../devices/devices");
 const GenericDevice = require("../devices/genericDevice");
+
+const { CCU3 } = require("./ccu3");
 const { Config } = require("../config/configSingleton");
 
+var config = new Config().instance().getConfig()
+new Keystore().instance().addConfig(config)
 
 class Schedule {
     constructor(interval, listeners = [], ccu3 = {}, drax = {}, sgtin = null, ip = null, client) {
