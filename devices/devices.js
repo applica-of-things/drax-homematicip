@@ -1,7 +1,8 @@
 const { response } = require("express");
 const { FactoryDevice } = require("./factoryDevice");
 const { _ } = require("underscore");
-const configPath = require("../options");
+const { Config } = require("../config/configSingleton");
+
 
 class Devices {
     constructor(listDevices = null, client = null, 
@@ -52,7 +53,7 @@ class Devices {
 
     stateUnreach(response){
         try{
-            var config = require(configPath)
+            var config = new Config().instance().getConfig()
             var key = config.keys.find(k => k.address == response.address)
             var dev = new FactoryDevice(this.client, this.ccu3, this.drax, this.sgtin, this.ip).getDevice({type: key.type, address: response.address})
             dev.stateUnreach(response)
@@ -66,7 +67,7 @@ class Devices {
             responses.forEach((response) => {
                 if(this.hasAllChannels(response)){
                     try{
-                        var config = require(configPath)
+                        var config = new Config().instance().getConfig()
                         var key = config.keys.find(k => k.address == response.address)
                         var dev = new FactoryDevice(this.client, this.ccu3, this.drax, this.sgtin, this.ip).getDevice({type: key.type, address: response.address})
                         dev.stateEvent({...response})

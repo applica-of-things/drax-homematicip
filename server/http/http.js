@@ -1,6 +1,6 @@
 const { Keystore } = require('drax-sdk-nodejs/keystore');
 const fs = require('fs');
-const configPath = require('../../options');
+const { Config } = require('../../config/configSingleton');
 class Http {
     constructor(app){
         this.controller(app)        
@@ -15,7 +15,7 @@ class Http {
         app.post('/config', (req, res) => {            
             console.log("config post received!")
             var keys = req.body.keys
-            var config = require(configPath);
+            var config = new Config().instance().getConfig();
 
             keys.forEach(k => {
                 var _k = config.keys.find(key => k.nodeId == key.nodeId)
@@ -28,7 +28,7 @@ class Http {
                 if (err) {
                     throw err;
                 }
-                var c = require(configPath);
+                var c = new Config().instance().getConfig();
                 new Keystore().instance().addConfig(c)
                 res.send("OK");
             })

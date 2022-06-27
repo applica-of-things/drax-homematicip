@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class AppliHomeClient {
     constructor(params = null){
-        this.params = params || {serviceUrl: "http://localhost:8081/trv"}
+        this.params = params || {serviceUrl: "https://draxcloud.com/trv"}
         this.token = null
     }
 
@@ -67,6 +67,28 @@ class AppliHomeClient {
             var headers = {"x-auth-token": this.token}
             axios
                 .post(this.params.serviceUrl + '/keystore/saveKeystore', data, {headers})
+                .then(res => {                    
+                    console.log(`statusCode: ${res.status}`);
+                    if (res.data.responseCode != 0){
+                        reject(res.data.responseCode)
+                    } else {
+                        console.log(res);
+                        resolve(res)
+                    }
+                })
+                .catch(error => {                    
+                    console.error(error);
+                    reject(error)
+                });
+        })
+    }
+
+    loadConfig(sgtin){
+        return new Promise((resolve, reject) => {
+            var headers = {"x-auth-token": this.token}
+            var data = sgtin
+            axios
+                .post(this.params.serviceUrl + '/ccu3/config', data, {headers})
                 .then(res => {                    
                     console.log(`statusCode: ${res.status}`);
                     if (res.data.responseCode != 0){

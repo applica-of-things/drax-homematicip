@@ -5,6 +5,10 @@ const Server = require("./server/server");
 const AppliHomeClient = require("./appliHomeClient/client");
 const Gateway = require("./homematic/gateway");
 const Ip = require("./devices/ccu3/params/ip");
+const { Config } = require("./config/configSingleton");
+const configPath = require("./options");
+
+var config = require(configPath)
 
 var sgtin = new Sgtin()
 var ip = new Ip()
@@ -14,19 +18,24 @@ var args = process.argv.slice(2);
 
 var appliHomeClient = new AppliHomeClient(
     {
-        mail: "hm_drax@applica5.guru",
-        password: "MefracruPH98___",
+        mail: config.mail,
+        password: config.password,
         serviceUrl: args[0]
     }
 )
 
 var params = new ParamsLoader('/var/hm_mode', [sgtin, ip])
 params.load(() => {
-    console.log(sgtin.getParam())
-    console.log(ip.getParam())
-    var server = new Server()
-    server.start()
-    var gateway = new Gateway(sgtin.getParam(), ip.getParam(), null)
-    gateway.addTimeListener(poll)
-    gateway.start()
+    var config = new Config().instance()
+    config.addSgtin(sgtin.getParam())
+    config.addClient(appliHomeClient)
+    config.load().then((res) => {
+        console.log(res)
+        var gateway = new Gateway(sgtin.getParam(), ip.getParam(), null)
+        gateway.addTimeListener(poll)
+        gateway.start()
+    })
+    .catch((e) => {
+        process.exit(1)
+    })
 })

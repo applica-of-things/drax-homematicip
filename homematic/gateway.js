@@ -1,10 +1,5 @@
 const { Drax } = require("drax-sdk-nodejs");
 const { Keystore } = require("drax-sdk-nodejs/keystore");
-const configPath = require("../options");
-
-const fs = require('fs');
-
-var config = require(configPath);
 
 const { CCU3 } = require("./ccu3");
 new Keystore().instance().addConfig(config)

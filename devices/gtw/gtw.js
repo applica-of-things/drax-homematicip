@@ -1,5 +1,5 @@
+const { Config } = require("../../config/configSingleton");
 const { DELETE_FLAG_RESET } = require("../../homematic/flags");
-const configPath = require("../../options");
 const GenericDevice = require("../genericDevice");
 
 
@@ -21,7 +21,20 @@ class Gtw extends GenericDevice {
 
     }
 
-    state(){        
+    state(){
+        var state = {
+            connected = true,
+            ip: this.ip
+        }
+        try {
+            let config = new Config().instance().getConfig();
+            let nodeId = config.keys.find(k => k.type == "gtw" && k.address == this.address).nodeId
+            if (nodeId){
+                this.drax.setState(nodeId, null, state, false)
+            }
+        } catch (e) {
+            console.log("Key missing! address: %s", this.address)
+        }
     }
 
     scan(){
@@ -39,7 +52,7 @@ class Gtw extends GenericDevice {
                 ip: this.ip
             }
             try {
-                let config = require(configPath);
+                let config = new Config().instance().getConfig();
                 let nodeId = config.keys.find(k => k.type == "gtw" && k.address == this.address).nodeId
                 if (nodeId){
                     this.drax && this.drax.setState(nodeId, null, state, false)

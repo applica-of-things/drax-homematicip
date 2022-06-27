@@ -1,6 +1,6 @@
 const { reject } = require("underscore")
+const { Config } = require("../../config/configSingleton")
 const { DELETE_FLAG_RESET } = require("../../homematic/flags")
-const configPath = require("../../options")
 const GenericDevice = require("../genericDevice")
 
 class Sth extends GenericDevice {
@@ -20,7 +20,7 @@ class Sth extends GenericDevice {
     handshake() {
         return new Promise((resolve, reject) => {
             try {
-                let config = require(configPath);
+                let config = new Config().instance().getConfig();
                 let nodeId = config.keys.find(k => k.type == 'sth' && k.address == this.address).nodeId
                 resolve()
             } catch(e){
@@ -44,7 +44,7 @@ class Sth extends GenericDevice {
                         "parentAddress": this.sgtin,
                         "address": this.address
                     }
-                    let config = require(configPath);
+                    let config = new Config().instance().getConfig();
                     config.keys.push(newKey)
                     this.updateConfig(config, this.client, () => resolve(), () => reject())
                 })
@@ -74,7 +74,7 @@ class Sth extends GenericDevice {
         }
 
         try {
-            let config = require(configPath);
+            let config = new Config().instance().getConfig();
             let nodeId = config.keys.find(k => k.type == "sth" && k.address == this.address).nodeId
             if(nodeId) {
                 this.drax && this.drax.setState(nodeId, null, state, false)
