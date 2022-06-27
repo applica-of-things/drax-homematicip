@@ -5,27 +5,17 @@ const configPath = require("../options");
 class GenericDevice {
     constructor(){}
 
-    updateConfig(config, client = null, resolve = null, reject = null){
-        if (client != null){
-            client.login()
-            .then(() => {
-                client.saveKeystore({keys: config.keys}).then(() => {
-                    var config = new Config().instance()
-                    config.load().then(() => {
-                        new Keystore().instance().addConfig(config.getConfig())
-                        if (resolve != null){                        
-                            resolve()
-                        }
-                    })
-                })
-            })
-            .catch((code) => {
-                console.log(code)
-                if (reject != null){
-                    reject()
-                }
-            })
-        }
+    updateConfig(config, resolve = null, reject = null){
+        var configuration = new Config().instance()
+        configuration.update(config).then(() => {
+            if (resolve){
+                resolve()
+            }
+        }).catch((e) => {
+            if (reject){
+                reject()
+            }
+        })
     }
 
     stateEvent(response){

@@ -47,7 +47,7 @@ class Trv extends GenericDevice {
                     }
                     let config = new Config().instance().getConfig();
                     config.keys.push(newKey)
-                    this.updateConfig(config, this.client, () => resolve(), () => reject())
+                    this.updateConfig(config, () => resolve(), () => reject())
                 })
             }
         })

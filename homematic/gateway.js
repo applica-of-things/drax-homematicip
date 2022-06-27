@@ -72,43 +72,43 @@ class Gateway extends GenericDevice {
         this.timeListeners.push(listener)
     }
 
-    handshake(){
-        var gatewayNode = {
-            id: 0,
-            urn: "gtw:" + this.sgtin + ":" + this.sgtin,
-            supportedTypes: ["hm-gtw"],
-            configurationPublishTopic: "configurations/hmip/" + this.sgtin,
-            statePublishTopic: "states/hmip",
-            initialState: { ip: this.ip },
-            name: "GTW-" + this.sgtin
-        }
-        this.drax && this.drax.handshake(gatewayNode)
-        .then((res) => {
-            console.log(res)
-            try {
-                new Keystore().instance().getPrivateKey(res.data.nodeId)
-            } catch (e) {
-                var newKey = {
-                    "nodeId": res.data.nodeId,
-                    "publicKey": new Buffer.from(res.data.publicKey, 'base64').toString('hex'),
-                    "privateKey": new Buffer.from(res.data.privateKey, 'base64').toString('hex'),
-                    "type": "gtw",
-                    "parentAddress": this.sgtin,
-                    "address": this.sgtin
-                }
-                this.config.keys.push(newKey)
-            }
+    //handshake(){
+        // var gatewayNode = {
+        //     id: 0,
+        //     urn: "gtw:" + this.sgtin + ":" + this.sgtin,
+        //     supportedTypes: ["hm-gtw"],
+        //     configurationPublishTopic: "configurations/hmip/" + this.sgtin,
+        //     statePublishTopic: "states/hmip",
+        //     initialState: { ip: this.ip },
+        //     name: "GTW-" + this.sgtin
+        // }
+        // this.drax && this.drax.handshake(gatewayNode)
+        // .then((res) => {
+        //     console.log(res)
+        //     try {
+        //         new Keystore().instance().getPrivateKey(res.data.nodeId)
+        //     } catch (e) {
+        //         var newKey = {
+        //             "nodeId": res.data.nodeId,
+        //             "publicKey": new Buffer.from(res.data.publicKey, 'base64').toString('hex'),
+        //             "privateKey": new Buffer.from(res.data.privateKey, 'base64').toString('hex'),
+        //             "type": "gtw",
+        //             "parentAddress": this.sgtin,
+        //             "address": this.sgtin
+        //         }
+        //         this.config.keys.push(newKey)
+        //     }
 
-            this.updateConfig(this.config, this.client, () => this.beforeInit())
-        })
-        .catch(e => {
-            console.log(e)
-            //setTimeout(() => this.handshake(), 10000)
-            this.drax = null
+        //     this.updateConfig(this.config, () => this.beforeInit())
+        // })
+        // .catch(e => {
+        //     console.log(e)
+        //     //setTimeout(() => this.handshake(), 10000)
+        //     this.drax = null
 
-            this.completeInit()
-        })
-    }
+        //     this.beforeInit()
+        // })
+    //}
 
     beforeInit(){
         this.ccu3 = new CCU3(
