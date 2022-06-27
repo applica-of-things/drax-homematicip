@@ -7,9 +7,6 @@ const GenericDevice = require("../devices/genericDevice");
 const { CCU3 } = require("./ccu3");
 const { Config } = require("../config/configSingleton");
 
-var config = new Config().instance().getConfig()
-new Keystore().instance().addConfig(config)
-
 class Schedule {
     constructor(interval, listeners = [], ccu3 = {}, drax = {}, sgtin = null, ip = null, client) {
         this.interval = interval;
@@ -53,6 +50,8 @@ class Gateway extends GenericDevice {
         super()
         this.sgtin = sgtin
         this.ip = ip
+        var config = new Config().instance().getConfig()
+        new Keystore().instance().addConfig(config)
         this.params = {
             host: null,
             port: null,
