@@ -31,7 +31,7 @@ params.load(() => {
     config.addClient(appliHomeClient)
     config.load().then((res) => {
         console.log(res)
-        var gateway = new Gateway(sgtin.getParam(), ip.getParam(), null)
+        var gateway = new Gateway(sgtin.getParam(), ip.getParam(), appliHomeClient)
         gateway.addTimeListener(poll)
         gateway.start()
     })
