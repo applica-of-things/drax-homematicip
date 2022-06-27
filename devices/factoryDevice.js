@@ -25,7 +25,7 @@ class FactoryDevice {
             case 'HmIP-eTRV-B':
             case 'trv':
                 return new Trv(device.address, this.client, this.ccu3, this.drax, this.sgtin, this.ip)
-
+            case 'HmIP-RCV-50':
             case 'gtw':
                 return new Gtw(device.address, this.client, this.ccu3, this.drax, this.sgtin, this.ip)     
 

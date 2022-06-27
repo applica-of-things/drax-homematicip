@@ -15,7 +15,7 @@ class Schedule {
         this.drax = drax
         this.sgtin = sgtin
         this.ip = ip
-        this.client = this.client
+        this.client = client
         this.watchId = null
     }
 
@@ -51,7 +51,7 @@ class Gateway extends GenericDevice {
         this.sgtin = sgtin
         this.ip = ip
         this.config = new Config().instance().getConfig()
-        new Keystore().instance().addConfig(config)
+        new Keystore().instance().addConfig(this.config)
         this.params = {
             host: null,
             port: null,
@@ -99,41 +99,35 @@ class Gateway extends GenericDevice {
                 this.config.keys.push(newKey)
             }
 
-            this.updateConfig(this.config, this.client)
-
-            this.ccu3 = new CCU3(
-                this.config.ccu3.address, 
-                this.config.ccu3.port, 
-                this.config.ccu3.credentials,
-                this.config.ccu3.serverHost,
-                this.config.ccu3.serverPort)
-
-            this.ccu3.registerServer().then(() => {
-                this.init()
-            })
+            this.updateConfig(this.config, this.client, () => this.beforeInit())
         })
         .catch(e => {
             console.log(e)
-            //setTimeout(() => this.handshake(), 10000)            
+            //setTimeout(() => this.handshake(), 10000)
             this.drax = null
 
-            this.ccu3 = new CCU3(
-                this.config.ccu3.address, 
-                this.config.ccu3.port, 
-                this.config.ccu3.credentials,
-                this.config.ccu3.serverHost,
-                this.config.ccu3.serverPort)
+            this.completeInit()
+        })
+    }
 
-            this.ccu3.registerServer().then(() => {
-                this.init()
-            })
+    beforeInit(){
+        this.ccu3 = new CCU3(
+            this.config.ccu3.address, 
+            this.config.ccu3.port, 
+            this.config.ccu3.credentials,
+            this.config.ccu3.serverHost,
+            this.config.ccu3.serverPort)
+
+        this.ccu3.registerServer().then(() => {
+            this.init()
         })
     }
 
     start() {        
         this.drax = new Drax(this.params)
         this.drax.start().then(() => {
-            this.handshake()
+            //this.handshake()
+            this.beforeInit()
         })
     }
 

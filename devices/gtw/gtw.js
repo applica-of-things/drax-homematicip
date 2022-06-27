@@ -21,6 +21,42 @@ class Gtw extends GenericDevice {
 
     }
 
+    handshake(){
+        return new Promise((resolve, reject) => {
+            try {
+                let config = new Config().instance().getConfig();
+                let nodeId = config.keys.find(k => k.type == "gtw" && k.address == this.address).nodeId
+                resolve()
+            } catch (e) {
+                console.log("Key missing! address: %s", this.sgtin)
+                var node = {
+                    id: 0,
+                    urn: "gtw:" + this.sgtin + ":" + this.sgtin,
+                    supportedTypes: ["hm-gtw"],
+                    configurationPublishTopic: "configurations/hmip/" + this.sgtin,
+                    statePublishTopic: "states/hmip",
+                    initialState: {},
+                    name: "GTW-" + this.sgtin + "-" + this.sgtin
+                }
+                this.drax && this.drax.handshake(node).then((res) => {
+                    console.log(res)                
+                    var newKey = {
+                        "nodeId": res.data.nodeId,
+                        "publicKey": new Buffer.from(res.data.publicKey, 'base64').toString('hex'),
+                        "privateKey": new Buffer.from(res.data.privateKey, 'base64').toString('hex'),
+                        "type": "gtw",
+                        "parentAddress": this.sgtin,
+                        "address": this.sgtin
+                    }
+                    let config = new Config().instance().getConfig();
+                    config.keys.push(newKey)
+                    this.updateConfig(config, this.client, () => resolve(), () => reject())
+                })
+            }
+        })
+
+    }
+
     state(){
         var state = {
             connected: true,
@@ -49,6 +85,7 @@ class Gtw extends GenericDevice {
 
             var state = {
                 devices: JSON.stringify(this.data.devices),
+                connected: true,
                 ip: this.ip
             }
             try {

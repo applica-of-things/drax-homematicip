@@ -1,5 +1,5 @@
 const { Keystore } = require("drax-sdk-nodejs/keystore");
-const fs = require('fs');
+const { Config } = require("../config/configSingleton");
 const configPath = require("../options");
 
 class GenericDevice {
@@ -10,11 +10,13 @@ class GenericDevice {
             client.login()
             .then(() => {
                 client.saveKeystore({keys: config.keys}).then(() => {
-                    var config = new Config().instance().load()
-                    if (resolve != null){
-                        new Keystore().instance().addConfig(config)
-                        resolve()
-                    }
+                    var config = new Config().instance()
+                    config.load().then(() => {
+                        new Keystore().instance().addConfig(config.getConfig())
+                        if (resolve != null){                        
+                            resolve()
+                        }
+                    })
                 })
             })
             .catch((code) => {
