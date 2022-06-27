@@ -29,6 +29,6 @@ npm install
 
 while true
 do
-        node main.js "https://draxcloud.com/trv/"
+        node main.js "https://draxcloud.com/trv"
         /bin/sleep 5
 done
