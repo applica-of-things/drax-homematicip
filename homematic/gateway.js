@@ -50,13 +50,13 @@ class Gateway extends GenericDevice {
         super()
         this.sgtin = sgtin
         this.ip = ip
-        var config = new Config().instance().getConfig()
+        this.config = new Config().instance().getConfig()
         new Keystore().instance().addConfig(config)
         this.params = {
             host: null,
             port: null,
             vhost: null,
-            config
+            config: this.config
         }
 
         this.timeListeners = []
@@ -96,17 +96,17 @@ class Gateway extends GenericDevice {
                     "parentAddress": this.sgtin,
                     "address": this.sgtin
                 }
-                config.keys.push(newKey)
+                this.config.keys.push(newKey)
             }
 
-            this.updateConfig(config, this.client)
+            this.updateConfig(this.config, this.client)
 
             this.ccu3 = new CCU3(
-                config.ccu3.address, 
-                config.ccu3.port, 
-                config.ccu3.credentials,
-                config.ccu3.serverHost,
-                config.ccu3.serverPort)
+                this.config.ccu3.address, 
+                this.config.ccu3.port, 
+                this.config.ccu3.credentials,
+                this.config.ccu3.serverHost,
+                this.config.ccu3.serverPort)
 
             this.ccu3.registerServer().then(() => {
                 this.init()
@@ -118,11 +118,11 @@ class Gateway extends GenericDevice {
             this.drax = null
 
             this.ccu3 = new CCU3(
-                config.ccu3.address, 
-                config.ccu3.port, 
-                config.ccu3.credentials,
-                config.ccu3.serverHost,
-                config.ccu3.serverPort)
+                this.config.ccu3.address, 
+                this.config.ccu3.port, 
+                this.config.ccu3.credentials,
+                this.config.ccu3.serverHost,
+                this.config.ccu3.serverPort)
 
             this.ccu3.registerServer().then(() => {
                 this.init()
@@ -140,7 +140,7 @@ class Gateway extends GenericDevice {
     init() {
         try{
             this.ccu3.subscribe()
-            this.schedule = new Schedule(config.ccu3.interval_min * 60 * 1000, this.timeListeners, this.ccu3, this.drax, this.sgtin, this.ip, this.client)
+            this.schedule = new Schedule(this.config.ccu3.interval_min * 60 * 1000, this.timeListeners, this.ccu3, this.drax, this.sgtin, this.ip, this.client)
             this.schedule.init()
             this.schedule.start()
     
