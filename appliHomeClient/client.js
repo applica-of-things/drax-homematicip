@@ -83,6 +83,27 @@ class AppliHomeClient {
         })
     }
 
+    saveDevice(data){
+        return new Promise((resolve, reject) => {
+            var headers = {"x-auth-token": this.token}
+            axios
+                .post(this.params.serviceUrl + '/ccu3/saveDevices', data, {headers})
+                .then(res => {                    
+                    console.log(`statusCode: ${res.status}`);
+                    if (res.data.responseCode != 0){
+                        reject(res.data.responseCode)
+                    } else {
+                        console.log(res);
+                        resolve(res)
+                    }
+                })
+                .catch(error => {                    
+                    console.error(error);
+                    reject(error)
+                });
+        })
+    }
+
     loadConfig(sgtin){
         return new Promise((resolve, reject) => {
             var headers = {"x-auth-token": this.token}

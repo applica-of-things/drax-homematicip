@@ -1,5 +1,5 @@
 const { Keystore } = require("drax-sdk-nodejs/keystore");
-const { Config } = require("../config/configSingleton");
+const { Config } = require("../config/configuration");
 const configPath = require("../options");
 
 class GenericDevice {

@@ -2,11 +2,19 @@
 
 rootFolder="/root/bin"
 hmFolder=${rootFolder}/drax-hmIp
+keysPath="/root/keys.json"
 
 if [ ! -d $rootFolder ]
 then
         echo "Creating folder..."
         mkdir -p $rootFolder
+fi
+
+if [ ! -f $keysPath ]
+then
+        echo "touching keys file..."
+        touch $keysPath
+        echo "{keys: []}" > $keysPath
 fi
 
 cd $rootFolder
