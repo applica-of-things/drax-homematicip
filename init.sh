@@ -9,7 +9,7 @@ then
         echo "touching config file..."
         touch $configPath
         echo "{" >> $configPath
-        echo "   \"mail\": \"${mail}\"" >> $configPath
+        echo "   \"mail\": \"${mail}\"," >> $configPath
         echo "   \"password\": \"${password}\"" >> $configPath
         echo "}" >> $configPath
 fi
