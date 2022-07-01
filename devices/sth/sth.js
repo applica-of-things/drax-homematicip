@@ -1,5 +1,5 @@
 const { reject } = require("underscore")
-const { Config } = require("../../config/configSingleton")
+const { Config } = require("../../config/configuration")
 const { DELETE_FLAG_RESET } = require("../../homematic/flags")
 const GenericDevice = require("../genericDevice")
 

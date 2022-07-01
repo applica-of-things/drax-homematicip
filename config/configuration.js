@@ -35,9 +35,15 @@ class Config {
                     this.config = res.data.value
                     var obj = require(keysPath)
                     this.config.keys = obj.keys
+
+                    //this.config.ccu3.address = "192.168.43.131"
+                    //this.config.ccu3.serverHost = "192.168.43.110"
+
                     resolve(this.config)
                 })
-            }).catch(() => {reject()})
+            }).catch((e) => {
+                reject(e)
+            })
         })
     }
 

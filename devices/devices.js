@@ -1,7 +1,7 @@
 const { response } = require("express");
 const { FactoryDevice } = require("./factoryDevice");
 const { _ } = require("underscore");
-const { Config } = require("../config/configSingleton");
+const { Config } = require("../config/configuration");
 
 
 class Devices {

@@ -14,9 +14,9 @@ if [ ! -f $keysPath ]
 then
         echo "touching keys file..."
         touch $keysPath
-        echo "{keys: []}" > $keysPath
+        echo "{\"keys\": []}" > $keysPath
 fi
-
+chmod 777 $keysPath
 cd $rootFolder
 
 if [ -d $hmFolder ]

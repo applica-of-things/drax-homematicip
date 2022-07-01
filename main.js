@@ -5,8 +5,8 @@ const Server = require("./server/server");
 const AppliHomeClient = require("./appliHomeClient/client");
 const Gateway = require("./homematic/gateway");
 const Ip = require("./devices/ccu3/params/ip");
-const { Config } = require("./config/configSingleton");
-const configPath = require("./options");
+const { Config } = require("./config/configuration");
+const { configPath } = require("./options");
 
 var config = require(configPath)
 

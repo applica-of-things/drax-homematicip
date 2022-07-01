@@ -1,6 +1,6 @@
 const { Keystore } = require('drax-sdk-nodejs/keystore');
 const fs = require('fs');
-const { Config } = require('../../config/configSingleton');
+const { Config } = require('../../config/configuration');
 class Http {
     constructor(app){
         this.controller(app)        
