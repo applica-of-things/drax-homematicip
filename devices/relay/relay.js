@@ -97,6 +97,7 @@ class Relay extends GenericDevice {
         var stateAutomation = config.stateAutomation
         var devicesList = config.devicesList
         var threshold = config.threshold
+        var permanentOff = config.permanentOff
 
         if (devicesList){
             try {
@@ -105,6 +106,19 @@ class Relay extends GenericDevice {
                 let relay = conf.keys.find(k => k.type == "relay" && k.address == this.address)
                 if (relay){
                     new Config().instance().updateRelay({...relay, nodeAdresses: nodeAdresses, average: 0, threshold})
+                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+        if (permanentOff){
+            try {
+                let relay = new Config().instance().getRelayAverage(this.address);
+                if (relay){
+                    relay.permanentOff = parseInt(permanentOff)
+                    new Config().instance().updateRelay(relay)
                     this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
                 }
             } catch (e) {
