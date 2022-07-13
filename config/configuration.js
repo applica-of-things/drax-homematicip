@@ -73,7 +73,7 @@ class Config {
     update(config){
         return new Promise((resolve, reject) => {
             this.client.login().then(() => {
-                this.client.saveDevice({keys: config.keys}).then(() => {
+                this.client.saveDevice({hmIpDevices: config.keys}).then(() => {
                     var obj = {
                         keys: config.keys
                     }
