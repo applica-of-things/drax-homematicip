@@ -95,6 +95,35 @@ class Relay extends GenericDevice {
         var state = config.state
         var del = config.del
         var stateAutomation = config.stateAutomation
+        var devicesList = config.devicesList
+        var threshold = config.threshold
+
+        if (devicesList){
+            try {
+                var nodeAdresses = devicesList.split(",")
+                let conf = new Config().instance().getConfig();
+                let relay = conf.keys.find(k => k.type == "relay" && k.address == this.address)
+                if (relay){
+                    new Config().instance().updateRelay({...relay, nodeAdresses: nodeAdresses, average: 0, threshold})
+                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
+
+        if (threshold){
+            try {
+                let relay = new Config().instance().getRelayAverage(this.address);
+                if (relay){
+                    relay.threshold = threshold
+                    new Config().instance().updateRelay(relay)
+                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
 
         if (del == 1) {
             this.ccu3.deleteDevice(this.address, DELETE_FLAG_RESET);

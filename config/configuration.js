@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { Keystore } = require("drax-sdk-nodejs/keystore");
-const { keysPath } = require("../options");
+const { keysPath, relaysPath } = require("../options");
 
 var ConfigSingleton;
 
@@ -90,6 +90,31 @@ class Config {
             })
         })
             
+    }
+
+    updateRelay(data){
+        var obj = require(relaysPath)
+        var relays = obj.relays
+        var relay = relays.find(r => r.address == data.address)
+        if (relay){
+            relay = data
+        } else {
+            relays.push(data)
+        }
+        fs.writeFileSync(relaysPath, JSON.stringify(obj))            
+    }
+
+    getRelayAverage(address){
+        var obj = require(relaysPath)
+        var relays = obj.relays
+        var relay = relays.find(r => r.address == address)
+        return relay
+    }
+
+    getRelayAverageFromTrv(trvAddress){
+        var obj = require(relaysPath)
+        var relays = obj.relays
+        return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(trvAddress))
     }
 
     getConfig(){

@@ -8,7 +8,7 @@ const Ip = require("./devices/ccu3/params/ip");
 const { Config } = require("./config/configuration");
 const { configPath } = require("./options");
 
-var config = require(configPath)
+var conf = require(configPath)
 
 var sgtin = new Sgtin()
 var ip = new Ip()
@@ -18,8 +18,8 @@ var args = process.argv.slice(2);
 
 var appliHomeClient = new AppliHomeClient(
     {
-        mail: config.mail,
-        password: config.password,
+        mail: conf.mail,
+        password: conf.password,
         serviceUrl: args[0]
     }
 )

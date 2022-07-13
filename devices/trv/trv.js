@@ -1,7 +1,9 @@
 const { reject } = require("underscore");
 const { Config } = require("../../config/configuration");
 const { DELETE_FLAG_RESET } = require("../../homematic/flags");
+const { FactoryDevice } = require("../factoryDevice");
 const GenericDevice = require("../genericDevice");
+const { Relay } = require("../relay/relay");
 
 
 class Trv extends GenericDevice {
@@ -54,7 +56,33 @@ class Trv extends GenericDevice {
 
     }
 
-    stateEvent(response){
+    updateAndCheckRelay(level){
+        let relay = new Config().instance().getRelayAverageFromTrv(this.address);
+        if (relay){
+            let divisor = 1
+            if (relay && relay.average != 0){
+                divisor = 2
+            }
+            relay.average = (relay.average + level) / divisor
+            new Config().instance().updateRelay(relay)
+            if (relay.average > relay.threshold){
+                turnOnRelay(relay.address)
+            } else {
+                turnOffRelay(relay.address)
+            }
+        }
+
+    }
+
+    turnOnRelay(){
+        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+    }
+
+    turnOffRelay(){
+        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+    }
+
+    stateEvent(response){        
         this.sendState(response)
     }
 
@@ -90,6 +118,9 @@ class Trv extends GenericDevice {
             ip: this.ip,
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
+        }
+        if (data.LEVEL){
+            this.updateAndCheckRelay(data.LEVEL * 100)
         }
 
         if (data.SET_POINT_MODE != 1){

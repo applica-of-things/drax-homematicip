@@ -3,6 +3,7 @@
 rootFolder="/root/bin"
 hmFolder=${rootFolder}/drax-hmIp
 keysPath="/root/keys.json"
+relaysPath="/root/relays.json"
 
 if [ ! -d $rootFolder ]
 then
@@ -17,6 +18,15 @@ then
         echo "{\"keys\": []}" > $keysPath
 fi
 chmod 777 $keysPath
+
+if [ ! -f $relaysPath ]
+then
+        echo "touching keys file..."
+        touch $relaysPath
+        echo "{\"relays\": []}" > $relaysPath
+fi
+chmod 777 $relaysPath
+
 cd $rootFolder
 
 if [ -d $hmFolder ]
