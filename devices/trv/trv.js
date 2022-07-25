@@ -78,12 +78,12 @@ class Trv extends GenericDevice {
 
     }
 
-    turnOnRelay(){
-        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+    turnOnRelay(relayAddress){
+        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
     }
 
-    turnOffRelay(){
-        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+    turnOffRelay(relayAddress){
+        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
     }
 
     stateEvent(response){        
