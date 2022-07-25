@@ -126,7 +126,7 @@ class Trv extends GenericDevice {
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
         }
-        if (data.LEVEL){
+        if (data.LEVEL != null){
             this.updateAndCheckRelay(data.LEVEL * 100)
         }
 
