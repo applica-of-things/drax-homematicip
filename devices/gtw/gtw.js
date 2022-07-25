@@ -94,6 +94,8 @@ class Gtw extends GenericDevice {
                 if (nodeId){
                     this.drax && this.drax.setState(nodeId, null, state, false)
                 }
+                let config = new Config().instance().getConfig();
+                this.updateConfig(config, () => resolve(), () => reject())
             } catch (e) {
                 console.log("Key missing! address: %s", this.address)
             }
