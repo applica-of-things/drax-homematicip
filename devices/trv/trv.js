@@ -59,7 +59,8 @@ class Trv extends GenericDevice {
     updateAndCheckRelay(level){
         let relay = new Config().instance().getRelayAverageFromTrv(this.address);
         if (relay){
-            let divisor = 1
+            let divisor = nodeAdresses?.length || 1
+            console.log("DIVISOR: ", divisor)
             if (relay && relay.average != 0){
                 divisor = 2
             }
@@ -68,7 +69,7 @@ class Trv extends GenericDevice {
             if (relay.permanentOff){
                 this.turnOffRelay(relay.address)
             } else {
-                if (relay.average > relay.threshold){
+                if (relay.average > 30){
                     this.turnOnRelay(relay.address)
                 } else {
                     this.turnOffRelay(relay.address)
