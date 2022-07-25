@@ -66,12 +66,12 @@ class Trv extends GenericDevice {
             relay.average = (relay.average + level) / divisor
             new Config().instance().updateRelay(relay)
             if (relay.permanentOff){
-                turnOffRelay(relay.address)
+                this.turnOffRelay(relay.address)
             } else {
                 if (relay.average > relay.threshold){
-                    turnOnRelay(relay.address)
+                    this.turnOnRelay(relay.address)
                 } else {
-                    turnOffRelay(relay.address)
+                    this.turnOffRelay(relay.address)
                 }
             }
         }
