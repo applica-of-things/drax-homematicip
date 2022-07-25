@@ -69,7 +69,6 @@ class Trv extends GenericDevice {
                     this.turnOffRelay(relay.address)
                 } else {
                     console.log("AVERAGE: ", relay.average)
-                    console.log("AVERAGE__TH: ", relay.average > 30)
                     if (relay.average > 30){
                         this.turnOnRelay(relay.address)
                     } else {
@@ -85,7 +84,7 @@ class Trv extends GenericDevice {
     }
 
     turnOffRelay(relayAddress){
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
     }
 
     stateEvent(response){
