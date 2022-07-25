@@ -116,6 +116,7 @@ class Config {
         var relays = obj.relays
         console.log("RELAYYYYYY:::", relays)
         console.log("RELAYYYYYY_TRV:::", trvAddress)
+        console.log("RELAYYYYYY_TRV_0:::", relays[0].nodeAdresses.includes(trvAddress))
         return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(trvAddress))
     }
 
