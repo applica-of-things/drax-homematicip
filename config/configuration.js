@@ -113,7 +113,7 @@ class Config {
 
     getRelayAverageFromTrv(trvAddress){
         var obj = require(relaysPath)
-        console.log("RELAYYYYYY:::")
+        console.log("RELAYYYYYY:::", obj)
         var relays = obj.relays
         return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(trvAddress))
     }
