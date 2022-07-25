@@ -88,7 +88,8 @@ class Trv extends GenericDevice {
         this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
     }
 
-    stateEvent(response){        
+    stateEvent(response){
+        console.log("SEND STATE:::", this.address)
         this.sendState(response)
     }
 
