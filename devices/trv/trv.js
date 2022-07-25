@@ -58,6 +58,7 @@ class Trv extends GenericDevice {
 
     updateAndCheckRelay(level){
         let relay = new Config().instance().getRelayAverageFromTrv(this.address);
+        console.log("RELAY: ", relay)
         if (relay){
             let divisor = relay.nodeAdresses.length
             console.log("RELAY: ", relay)
