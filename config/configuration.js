@@ -96,11 +96,15 @@ class Config {
         var obj = require(relaysPath)
         var relays = obj.relays
         var relay = relays.find(r => r.address == data.address)
+        console.log("RELAYYYYYYYYYYYY????::::", relay)
         if (relay){
             relay = data
         } else {
             relays.push(data)
         }
+
+        console.log("RELAYYYYYYYYYYYYSSSS????::::", relays)
+        console.log("RELAYYYYYYYYYYYYSSSS_OBJJJ????::::", obj)
         fs.writeFileSync(relaysPath, JSON.stringify(obj))            
     }
 
