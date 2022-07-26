@@ -62,8 +62,10 @@ class Trv extends GenericDevice {
         if (relay){
             let actualAverage = relay.average || 0
             let index = relay.index || 0
+            let timestamp = relay.timestamp || 0
+            let now = new Date().getTime()
 
-            if (index % relay.nodeAdresses.length == 0){
+            if (index % relay.nodeAdresses.length == 0 || now - timestamp > 3 * 60 * 60 * 1000){
                 actualAverage = 0
                 index = 0
             }
@@ -75,6 +77,7 @@ class Trv extends GenericDevice {
             }
             relay.average = actualAverage
             relay.index = index + 1
+            relay.timestamp = new Date().getTime()
             new Config().instance().updateRelay(relay)
             if (relay.permanentOff){
                 this.turnOffRelay(relay.address)
