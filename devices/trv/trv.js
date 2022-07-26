@@ -60,22 +60,34 @@ class Trv extends GenericDevice {
         let relay = new Config().instance().getRelayAverageFromTrv(this.address);
         console.log("RELAY: ", relay)
         if (relay){
-            let divisor = relay.nodeAdresses.length
-            if (divisor != 0){
-                console.log("DIVISOR: ", divisor)
-                relay.average = level / divisor
-                new Config().instance().updateRelay(relay)
-                if (relay.permanentOff){
-                    this.turnOffRelay(relay.address)
-                } else {
-                    console.log("AVERAGE: ", relay.average)
-                    if (relay.average > 30){
-                        this.turnOnRelay(relay.address)
-                    } else {
-                        this.turnOffRelay(relay.address)
-                    }
+            let actualAverage = relay.average || 0
+            let index = relay.index || 0
+
+            if (index % relay.nodeAdresses.length == 0){
+                actualAverage = 0
+                index = 0
+            }
+
+            if (level != 0){
+                if (relay.nodeAdresses.length > 1){
+                    actualAverage = actualAverage + level / relay.nodeAdresses.length
                 }
             }
+            console.log("DIVISOR: ", divisor)
+            relay.average = actualAverage
+            relay.index = index + 1
+            new Config().instance().updateRelay(relay)
+            if (relay.permanentOff){
+                this.turnOffRelay(relay.address)
+            } else {
+                console.log("AVERAGE: ", relay.average)
+                if (relay.average > 30){
+                    this.turnOnRelay(relay.address)
+                } else {
+                    this.turnOffRelay(relay.address)
+                }
+            }
+            
         }
     }
 
