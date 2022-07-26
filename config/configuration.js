@@ -95,18 +95,14 @@ class Config {
     updateRelay(data){
         var obj = require(relaysPath)
         var relays = obj.relays
-        var relay = relays.find(r => r.address == data.address)
-        console.log("RELAYYYYYYYYYYYY????::::", relay)
-        if (relay){
-            relay = data
+        var relayIdx = relays.findIndex(r => r.address == data.address)
+        console.log("RELAYYYYYYYYYYYY????::::", relayIdx)
+        if (relayIdx != -1){
+            obj.relays[relayIdx] = data
         } else {
-            relays.push(data)
+            obj.relays.push(data)
         }
-        console.log("RELAYYYYYYYYYYYY_AFTER????::::", relay)
-        console.log("RELAYYYYYYYYYYYY_DATA????::::", data)
-        console.log("RELAYYYYYYYYYYYYSSSS????::::", relays)
-        console.log("RELAYYYYYYYYYYYYSSSS????::::", JSON.stringify(relays))
-        console.log("RELAYYYYYYYYYYYYSSSS_OBJJJ????::::", obj)
+        console.log("RELAYYYYYYYYYYYYSSSS????::::", JSON.stringify(obj))
         fs.writeFileSync(relaysPath, JSON.stringify(obj))
     }
 
