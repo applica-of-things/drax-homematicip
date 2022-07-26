@@ -102,10 +102,12 @@ class Config {
         } else {
             relays.push(data)
         }
-
+        console.log("RELAYYYYYYYYYYYY_AFTER????::::", relay)
+        console.log("RELAYYYYYYYYYYYY_DATA????::::", data)
         console.log("RELAYYYYYYYYYYYYSSSS????::::", relays)
+        console.log("RELAYYYYYYYYYYYYSSSS????::::", JSON.stringify(relays))
         console.log("RELAYYYYYYYYYYYYSSSS_OBJJJ????::::", obj)
-        fs.writeFileSync(relaysPath, JSON.stringify(obj))            
+        fs.writeFileSync(relaysPath, JSON.stringify(obj))
     }
 
     getRelayAverage(address){
