@@ -119,7 +119,11 @@ class Relay extends GenericDevice {
                 if (relay){
                     relay.permanentOff = parseInt(permanentOff)
                     new Config().instance().updateRelay(relay)
-                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                    if (relay.permanentOff == 0 && relay.average && relay.average > 30){
+                        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+                    } else {
+                        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                    }
                 }
             } catch (e) {
                 console.log(e)
