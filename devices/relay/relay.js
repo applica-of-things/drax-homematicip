@@ -104,6 +104,11 @@ class Relay extends GenericDevice {
                 var nodeAdresses = devicesList.split(",")
                 let conf = new Config().instance().getConfig();
                 let relay = conf.keys.find(k => k.type == "relay" && k.address == this.address)
+                console.log("ADDRESSES::::", this.address)
+                console.log("CONFFFF::::", conf.keys)
+                console.log("RELAYYY::::", relay)
+                console.log("DEVICELISTTTT::::", this.address)
+                console.log("NODEADRESS::::", nodeAdresses)
                 if (relay){
                     new Config().instance().updateRelay({...relay, nodeAdresses: nodeAdresses, average: 0, threshold})
                     this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
