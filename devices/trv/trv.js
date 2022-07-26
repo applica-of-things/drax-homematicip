@@ -73,7 +73,6 @@ class Trv extends GenericDevice {
                     actualAverage = actualAverage + level / relay.nodeAdresses.length
                 }
             }
-            console.log("DIVISOR: ", divisor)
             relay.average = actualAverage
             relay.index = index + 1
             new Config().instance().updateRelay(relay)
