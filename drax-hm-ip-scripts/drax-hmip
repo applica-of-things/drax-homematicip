@@ -1,0 +1,13 @@
+#! /bin/sh
+
+
+case "$1" in
+  start)
+    # Run drax-hm
+    /bin/mount -o remount,rw /
+    sh /root/run.sh > /root/drax-hm.log &
+    ;;
+  *)
+    ;;
+esac
+exit 0

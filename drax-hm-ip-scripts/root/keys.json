@@ -1,0 +1,52 @@
+{
+    "keys": [
+        {
+            "nodeId": 3744,
+            "publicKey": "4ca3dba106b427e383a77b0cc9ed45e62a43d6e605000000b89a07fb444b3225c35ee56064186f0892f77d2603000000",
+            "privateKey": "03b6061d882a69b3064ae265f3971213af5afe1903000000",
+            "type": "trv",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "00201D89A8EC80"
+        },
+        {
+            "nodeId": 3745,
+            "publicKey": "94ed2d535618fc4ef3265fb70803a2cd47c83ca606000000133a8bc8fae7c8378dacf78a5f2f5c7cd83b0a8f00000000",
+            "privateKey": "3a891ded606d2d6a3f26a8597838d65e30c9299e00000000",
+            "type": "trv",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "00201D89A8B0C1"
+        },
+        {
+            "nodeId": 3746,
+            "publicKey": "3af535e586b259b6a8021d6fcdd952a2a544dc320700000096406e77f0fdf2d1e119bdbab746b279ea40e76a01000000",
+            "privateKey": "91f43145c05e2f3324e4d9ee5adcdb6b826ed57e00000000",
+            "type": "sth",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "000E5D89A942A3"
+        },
+        {
+            "nodeId": 3747,
+            "publicKey": "4ceda911c657cd596a2cacba4c92e92ea03928eb020000003ad3d9c0e2d509c58669b1e836bf1884ed06023103000000",
+            "privateKey": "dc6255c71501e0d839cd3ae37279adaaf5f7b9cd01000000",
+            "type": "relay",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "00045D89ACE60B"
+        },
+        {
+            "nodeId": 3748,
+            "publicKey": "523b61dcda669d82a924069769358b50025a90ee070000009f88d3187a65c3162b197361eee683179c4887d607000000",
+            "privateKey": "dbb0fc2f09f65ed8d101008584ea0ae530b092ad02000000",
+            "type": "trv",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "00201D89A8B051"
+        },
+        {
+            "nodeId": 3749,
+            "publicKey": "7bb0d8f36398d022dec0afdbb84896f57fc3a05802000000f6742896fd7ad02b97436f69f58cebbc313b6d6006000000",
+            "privateKey": "da2fcde57427bd1ff7c9fdc862b6433b3c2a1df802000000",
+            "type": "gtw",
+            "parentAddress": "3014F711A0001F9D89A98A50",
+            "address": "3014F711A0001F9D89A98A50"
+        }
+    ]
+}
