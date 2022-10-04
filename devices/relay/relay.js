@@ -84,10 +84,15 @@ class Relay extends GenericDevice {
             let config = new Config().instance().getConfig();
             let nodeId = config.keys.find(k => k.type == "relay" && k.address == this.address).nodeId
             if (nodeId) {
-                this.drax && this.drax.setState(nodeId, null, state, false)
+                try {
+                    this.drax && this.drax.setState(nodeId, null, state, false)
+                } catch (e) {
+                    console.log("SetStateError: ", e); console.log("NodeId: ", nodeId);
+                    throw Error(e)
+                }
             }
         } catch (e) {
-            console.log("Key missing! address: %s", this.address)
+            console.log(e)
         }
     }
 
