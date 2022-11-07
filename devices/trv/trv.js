@@ -156,7 +156,9 @@ class Trv extends GenericDevice {
                     this.drax.setState(nodeId, null, state, false)
                 } catch (e) {
                     console.log("SetStateError: ", e); console.log("NodeId: ", nodeId);
-                    throw Error(e)
+                    console.log('force quit');
+                    process.exit(1);
+                    //throw Error(e)
                 }
             }
         } catch (e) {
