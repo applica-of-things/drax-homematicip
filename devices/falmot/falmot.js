@@ -73,12 +73,12 @@ class Falmot extends GenericDevice {
 
         this.data = {...this.data, ["level_" + _interactions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
         _interactions++
-        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb({...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
+        this.ccu3.getDeviceValues(this.address + ":" + _interactions, (d) => _cb.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
     }
 
     state(){
         var _interactions = 1
-        this.ccu3.getDeviceValues(this.address + ":" + _interactions, (d) => this.channelCallback({...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
+        this.ccu3.getDeviceValues(this.address + ":" + _interactions, (d) => this.channelCallback.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
     }
 
     // updateAndCheckRelay(level){
