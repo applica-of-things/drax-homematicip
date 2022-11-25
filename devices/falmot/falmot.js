@@ -58,10 +58,9 @@ class Falmot extends GenericDevice {
         this.state()
     }
 
-    channelCallback(data, iteractions){
-        var _interactions = iteractions
+    channelCallback(data){     
         var _cb = null
-        if (_interactions <= 11){
+        if (this.iteractions <= 11){
             _cb = this.channelCallback
         } else {
             _cb = function(data){
@@ -71,14 +70,14 @@ class Falmot extends GenericDevice {
             }
         }
 
-        this.data = {...this.data, ["level_" + _interactions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
-        _interactions++
-        this.ccu3.getDeviceValues(this.address + ":" + _interactions, (d) => _cb.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
+        this.data = {...this.data, ["level_" + this.iteractions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
+        this.iteractions++
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
     state(){
-        var _interactions = 1
-        this.ccu3.getDeviceValues(this.address + ":" + _interactions, (d) => this.channelCallback.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}, _interactions))
+        this.iteractions++
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
     // updateAndCheckRelay(level){
