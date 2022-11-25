@@ -61,23 +61,25 @@ class Falmot extends GenericDevice {
     channelCallback(data){     
         var _cb = null
         if (this.iteractions <= 11){
-            _cb = this.channelCallback
+            _cb = this.channelCallback.bind(this)
         } else {
             _cb = function(data){
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
                 this.sendState(this.data)
-            }
+            }.bind(this)
         }
 
         this.data = {...this.data, ["level_" + this.iteractions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
         this.iteractions++
-        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+        console.log("INTERACTIONS::", this.iteractions)
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
     state(){
         this.iteractions++
-        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+        console.log("INTERACTIONS::", this.iteractions)
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
     // updateAndCheckRelay(level){
