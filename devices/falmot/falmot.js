@@ -72,7 +72,7 @@ class Falmot extends GenericDevice {
 
         this.data = {...this.data, ["level_" + this.iteractions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
         this.iteractions++
-        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, _cb.bind(this, {...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
     state(){
