@@ -58,12 +58,12 @@ class Falmot extends GenericDevice {
         this.state()
     }
 
-    channelCallback = (data) => {        
+    channelCallback(data){        
         var _cb = null
         if (this.iteractions <= 11){
             _cb = this.channelCallback
         } else {
-            _cb = (data) => {
+            _cb = function (data){
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
                 this.sendState(this.data)
