@@ -131,7 +131,7 @@ class Wth extends GenericDevice {
 
     removeAllLinks(){
         var callback = (value) => {
-            var links = value?.map(v => {
+            var links = value != null && value.map(v => {
                 return {
                     receiver: v.RECEIVER,
                     sender: v.SENDER
@@ -167,7 +167,7 @@ class Wth extends GenericDevice {
 
     sendState(data){
         const _cb = (value) => {
-            var links = value?.map(v => v.RECEIVER) || []
+            var links = value != null && value.map(v => v.RECEIVER) || []
 
             const onLevel = () => {
                 var _level = this.levels.reduce((a, b) => a + b, 0) / this.levels.length;
