@@ -53,11 +53,8 @@ class Sth extends GenericDevice {
     }
 
     stateEvent(response){
-        this.sendState(response)
-    }
-
-    stateUnreach(response){
-        this.sendState(response)
+        //this.sendState(response)
+        this.state()
     }
 
     sendState(data){
@@ -100,7 +97,7 @@ class Sth extends GenericDevice {
                 this.sendState(this.data)
             }
             this.data = {...this.data, ...data}
-            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, ...this.device}))
+            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))
         }
         this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-STH'}))
         this.ccu3.setManualMode(this.address + ":1")

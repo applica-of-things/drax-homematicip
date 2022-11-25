@@ -1,5 +1,5 @@
 const { reject } = require("underscore")
-const { Config } = require("../../config/configuration")
+const { Config, VALID_STATE } = require("../../config/configuration")
 const { DELETE_FLAG_RESET } = require("../../homematic/flags")
 const GenericDevice = require("../genericDevice")
 
@@ -63,13 +63,9 @@ class Relay extends GenericDevice {
                 this.sendState(this.data)
             }
             this.data = { ...this.data, ...data }
-            this.ccu3.getDeviceValues(this.address + ":3", (d) => callback2({ ...d, ...this.device }))
+            this.ccu3.getDeviceValues(this.address + ":3", (d) => callback2({ ...d, address: this.address, type: 'HmIP-PCBS' }))
         }
         this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({ ...d, address: this.address, type: 'HmIP-PCBS' }))
-    }
-
-    stateUnreach(response){
-        this.sendState(response)
     }
 
     sendState(data) {
@@ -78,6 +74,13 @@ class Relay extends GenericDevice {
             unreach: data.UNREACH,
             ip: this.ip,
             state: data.STATE,
+        }
+
+        if (data.STATE){
+            let state = new Config().instance().checkState("relay", this.address, data.STATE);
+            if (state !== null && state !== VALID_STATE){
+                this.setRelayState(state)
+            }
         }
 
         try {
@@ -113,7 +116,7 @@ class Relay extends GenericDevice {
                 let relay = conf.keys.find(k => k.type == "relay" && k.address == this.address)
                 if (relay){
                     new Config().instance().updateRelay({...relay, nodeAdresses: nodeAdresses, average: 0, threshold})
-                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                    this.setRelayState(false)
                 }
             } catch (e) {
                 console.log(e)
@@ -126,10 +129,10 @@ class Relay extends GenericDevice {
                 if (relay){
                     relay.permanentOff = parseInt(permanentOff)
                     new Config().instance().updateRelay(relay)
-                    if (relay.permanentOff == 0 && relay.average && relay.average > 30){
-                        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+                    if (relay.permanentOff == 0 && relay.average && relay.average > this.ccu3.getThreshold()){
+                        this.setRelayState(true)
                     } else {
-                        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                        this.setRelayState(false)
                     }
                 }
             } catch (e) {
@@ -143,7 +146,7 @@ class Relay extends GenericDevice {
                 if (relay){
                     relay.threshold = threshold
                     new Config().instance().updateRelay(relay)
-                    this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+                    this.setRelayState(false)
                 }
             } catch (e) {
                 console.log(e)
@@ -155,14 +158,19 @@ class Relay extends GenericDevice {
         }
 
         if (stateAutomation == 0) {
-            this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+            this.setRelayState(false)
         }
 
         if (state == 1) {
-            this.ccu3.setDeviceValue(this.address + ":3", 'STATE', true)
+            this.setRelayState(true)
         } else if (state == 0) {
-            this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
+            this.setRelayState(false)
         }
+    }
+
+    setRelayState(value){
+        new Config().instance().setState("relay", this.address, value);
+        this.ccu3.setDeviceValue(this.address + ":3", 'STATE', value)
     }
 
 }

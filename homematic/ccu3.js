@@ -3,6 +3,8 @@ var xmlrpc = require('homematic-xmlrpc');
 const { findIndex } = require('underscore');
 const _ = require("underscore")
 
+const CLOSE_PERCENTAGE_THRESHOLD = 5 //[%]
+
 class CCU3 {
   constructor(clientHost = "localhost",
     clientPort = 2010,
@@ -16,7 +18,7 @@ class CCU3 {
       cookies: true,
       basic_auth: clientCredentials
     });
-
+    
     this.server = xmlrpc.createServer({ host: serverHost, port: serverPort })
     this.serverHost = serverHost
     this.serverPort = serverPort
@@ -24,6 +26,8 @@ class CCU3 {
     this.eventListeners = []
 
     this.responses = []
+
+    this.threshold = CLOSE_PERCENTAGE_THRESHOLD
   }
 
   addEventListener(listener) {
@@ -95,8 +99,10 @@ class CCU3 {
         resolve()
       }, 2000)
     })
+  }
 
-
+  getThreshold(){
+    return this.threshold
   }
 
   subscribe() {
@@ -192,6 +198,42 @@ class CCU3 {
 
   getDeviceValues(address, callback = null) {
     this.client.methodCall('getParamset', [address, "VALUES"], (error, value) => {
+      if (error) {
+        console.log('error:', error);
+      } else {
+        if (_.isFunction(callback)) {
+          callback(value)
+        }
+      }
+    });
+  }
+
+  getLinks(address, callback = null) {
+    this.client.methodCall('getLinks', [address, 1], (error, value) => {
+      if (error) {
+        console.log('error:', error);
+      } else {
+        if (_.isFunction(callback)) {
+          callback(value)
+        }
+      }
+    });
+  }
+
+  addLink(deviceA, deviceB, linkName, linkDescription, callback = null) {
+    this.client.methodCall('addLink', [deviceA, deviceB, linkName, linkDescription], (error, value) => {
+      if (error) {
+        console.log('error:', error);
+      } else {
+        if (_.isFunction(callback)) {
+          callback(value)
+        }
+      }
+    });
+  }
+
+  removeLink(sender, receiver, callback = null) {
+    this.client.methodCall('removeLink', [sender, receiver], (error, value) => {
       if (error) {
         console.log('error:', error);
       } else {

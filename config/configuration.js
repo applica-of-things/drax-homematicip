@@ -1,6 +1,8 @@
 const fs = require('fs');
 const { Keystore } = require("drax-sdk-nodejs/keystore");
-const { keysPath, relaysPath } = require("../options");
+const { keysPath, relaysPath, statePath } = require("../options");
+
+const VALID_STATE = 2010
 
 var ConfigSingleton;
 
@@ -111,18 +113,55 @@ class Config {
         return relay
     }
 
-    getRelayAverageFromTrv(trvAddress){
-        var obj = require(relaysPath)        
+    getRelayAverageFromAddress(address){
+        var obj = require(relaysPath)
         var relays = obj.relays
-        return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(trvAddress))
+        return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(address))
     }
 
     getConfig(){
         return this.config
     }
 
+    checkState(type, address, value){
+        var stateConfig = null
+        try {
+            stateConfig = require(statePath)
+        } catch (e){
+            stateConfig = {state: []}
+        }
+        var deviceState = stateConfig.state.find(s => s.type == type && s.address == address)
+        if (deviceState){
+            if (deviceState.value != value){
+                return deviceState.value
+            } else {
+                return VALID_STATE
+            }
+        }
+        return null
+    }
+
+    setState(type, address, value){
+        var obj = null
+        try {
+            obj = require(statePath)
+        } catch (e){
+            obj = {state: []}
+        }
+        
+        var state = obj.state
+        var stateIdx = state.findIndex(s => s.type == type && s.address == address)
+        if (stateIdx != -1){
+            obj.state[stateIdx] = {type, address, value}
+        } else {
+            obj.state.push({type, address, value})
+        }
+        fs.writeFileSync(statePath, JSON.stringify(obj))
+    }
+
 }
 
 module.exports = {
     Config: Config,
+    VALID_STATE: VALID_STATE
 }

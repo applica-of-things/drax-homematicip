@@ -23,7 +23,8 @@ class GenericDevice {
     }
 
     stateUnreach(response){
-        
+        console.log("UNREACHED:::", this.address)
+        process.exit(1);
     }
 
     handshake(){

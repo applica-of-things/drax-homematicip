@@ -1,9 +1,7 @@
-const { reject } = require("underscore");
-const { Config, VALID_STATE } = require("../../config/configuration");
-const { DELETE_FLAG_RESET } = require("../../homematic/flags");
+const { Config } = require("../../config/configuration");
 const GenericDevice = require("../genericDevice");
 
-class Trv extends GenericDevice {
+class Falmot extends GenericDevice {
     constructor(address, client, ccu3, drax, sgtin, ip){
         super()
         this.data = {}
@@ -15,24 +13,26 @@ class Trv extends GenericDevice {
         this.sgtin = sgtin
         this.ip = ip
         this.client = client
+
+        this.iteractions = 0
     }
 
     handshake(){
         return new Promise((resolve, reject) => {
             try {
                 let config = new Config().instance().getConfig();
-                let nodeId = config.keys.find(k => k.type == "trv" && k.address == this.address).nodeId
+                let nodeId = config.keys.find(k => k.type == 'falmot' && k.address == this.address).nodeId
                 resolve()
             } catch (e) {
                 console.log("Key missing! address: %s", this.address)
                 var node = {
                     id: 0,
-                    urn: "trv:" + this.sgtin + ":" + this.address,
-                    supportedTypes: ["hm-trv"],
+                    urn: "falmot:" + this.sgtin + ":" + this.address,
+                    supportedTypes: ["hm-falmot"],
                     configurationPublishTopic: "configurations/hmip/" + this.sgtin,
                     statePublishTopic: "states/hmip",
                     initialState: {},
-                    name: "TRV-" + this.address + "-" + this.sgtin
+                    name: "FALMOT-" + this.address + "-" + this.sgtin
                 }
                 this.drax && this.drax.handshake(node).then((res) => {
                     console.log(res)                
@@ -40,7 +40,7 @@ class Trv extends GenericDevice {
                         "nodeId": res.data.nodeId,
                         "publicKey": new Buffer.from(res.data.publicKey, 'base64').toString('hex'),
                         "privateKey": new Buffer.from(res.data.privateKey, 'base64').toString('hex'),
-                        "type": "trv",
+                        "type": "falmot",
                         "parentAddress": this.sgtin,
                         "address": this.address
                     }
@@ -52,6 +52,58 @@ class Trv extends GenericDevice {
         })
 
     }
+
+    stateEvent(response){
+        console.log("SEND STATE:::", this.address)
+        this.state()
+    }
+
+    channelCallback = (data) => {        
+        var _cb = null
+        if (this.iteractions <= 11){
+            _cb = this.channelCallback
+        } else {
+            _cb = (data) => {
+                this.data = {...this.data, ...data}
+                console.log("DATA::", this.data)
+                this.sendState(this.data)
+            }
+        }
+
+        this.data = {...this.data, ["level_" + this.iteractions]: data.LEVEL, address: this.address, type: 'HmIP-FALMOT-C12'}
+        this.iteractions++
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+    }
+
+    state(){
+        this.iteractions++
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+    }
+
+    // updateAndCheckRelay(level){
+    //     let relay = new Config().instance().getRelayAverageFromAddress(this.address);
+    //     console.log("RELAY: ", relay)
+    //     console.log("AVERAGE: ", level)
+    //     if (relay){
+    //         if (relay.permanentOff){
+    //             this.turnOffRelay(relay.address)
+    //         } else {                
+    //             if (level * 100 > 30){
+    //                 this.turnOnRelay(relay.address)
+    //             } else {
+    //                 this.turnOffRelay(relay.address)
+    //             }
+    //         }
+    //     }
+    // }
+
+    // turnOnRelay(relayAddress){
+    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+    // }
+
+    // turnOffRelay(relayAddress){
+    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+    // }
 
     updateAndCheckRelay(level){
         let relay = new Config().instance().getRelayAverageFromAddress(this.address);
@@ -103,59 +155,32 @@ class Trv extends GenericDevice {
         this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
     }
 
-    stateEvent(response){
-        console.log("SEND STATE:::", this.address)
-        //this.sendState(response)
-        this.state()
-    }
-
-    state(){
-        var callback1 = (data) => {
-
-            var callback2 = (data) => {
-                this.data = {...this.data, ...data}
-                console.log("DATA::", this.data)
-                this.sendState(this.data)
-            }
-
-            this.data = {...this.data, ...data}
-            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-eTRV-B'}))
-        }
-
-        this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-eTRV-B'}))
+    stateUnreach(response){
+        console.log("UNREACHED:::", this.address)
     }
 
     sendState(data){
-        var state = {
-            temperature: data.ACTUAL_TEMPERATURE || null,
-            battery: data.OPERATING_VOLTAGE? Math.ceil(Math.min(data.OPERATING_VOLTAGE / 2.8 * 100, 100)): null,
-            lowBattery: data.LOW_BAT,
-            address: data.address,
-            level: data.LEVEL != null? data.LEVEL * 100: null,
-            targetTemperature: data.SET_POINT_TEMPERATURE || null,
-            windowState: data.WINDOW_STATE,
-            ip: this.ip,
-            rssi: data.RSSI_DEVICE,
-            unreach: data.UNREACH,
-        }
-        if (data.SET_POINT_TEMPERATURE){
-            let state = new Config().instance().checkState("trv", this.address, data.SET_POINT_TEMPERATURE);
-            if (state !== null && state !== VALID_STATE){
-                this.setTargetTemperature(state)
+        var state = data
+        var _levels = []
+        for (var i = 1; i <= 12; i++){
+            if (data["level_" + i] != null && data["level_" + i] != undefined && data["level_" + i] !== ''){
+                _levels.push(data["level_" + i])
             }
         }
+        var level = null
 
-        if (data.LEVEL != null){
-            this.updateAndCheckRelay(data.LEVEL * 100)
+        if (_levels.length > 0){
+            level = _levels.reduce((a, b) => a + b, 0) / _levels.length;
         }
 
-        if (data.SET_POINT_MODE != 1){
-            this.ccu3.setManualMode(this.address + ":1")
+        if (level != null && level != undefined){
+            this.updateAndCheckRelay(level * 100)
         }
+        console.log("AVERAGE: ", level)
 
         try {
             let config = new Config().instance().getConfig();
-            let nodeId = config.keys.find(k => k.type == "trv" && k.address == this.address).nodeId
+            let nodeId = config.keys.find(k => k.type == "falmot" && k.address == this.address).nodeId
             if (nodeId){
                 try {
                     this.drax.setState(nodeId, null, state, false)
@@ -163,7 +188,6 @@ class Trv extends GenericDevice {
                     console.log("SetStateError: ", e); console.log("NodeId: ", nodeId);
                     console.log('force quit');
                     process.exit(1);
-                    //throw Error(e)
                 }
             }
         } catch (e) {
@@ -172,29 +196,14 @@ class Trv extends GenericDevice {
     }
 
     configuration(config){
-        var targetTemperature = config.targetTemperature
         var del = config.del
 
         if (del == 1){
             this.ccu3.deleteDevice(this.address, DELETE_FLAG_RESET);
-        } else {
-            if (targetTemperature != null){
-                try{
-                    targetTemperature = parseFloat(targetTemperature)
-                    this.setTargetTemperature(targetTemperature)
-                } catch (e){
-                    console.log(e)
-                }
-            }
         }
-    }
-
-    setTargetTemperature(t){
-        new Config().instance().setState("trv", this.address, t);
-        this.ccu3.setDeviceValue(this.address + ":1", 'SET_POINT_TEMPERATURE', t)
     }
 }
 
 module.exports = {
-    Trv: Trv
+    Falmot: Falmot
 }
