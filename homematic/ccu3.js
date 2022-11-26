@@ -172,10 +172,13 @@ class CCU3 {
     });
   }
 
-  getDeviceValue(address, type, callback = null) {
+  getDeviceValue(address, type, callback = null, onError = null) {
     this.client.methodCall('getValue', [address, type], (error, value) => {
       if (error) {
         console.log('error:', error);
+        if (_.isFunction(onError)) {
+          onError(error)
+        }
       } else {
         if (_.isFunction(callback)) {
           callback(value)

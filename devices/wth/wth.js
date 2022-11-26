@@ -158,16 +158,48 @@ class Wth extends GenericDevice {
         }
     }
 
-    getLevels(links, onLevel){
+    getLevels(links, onLevel, onError){
         var len = links.length || 0
         links.forEach(link => {
-            this.ccu3.getDeviceValue(link, 'LEVEL', (level) => this.addLevel(level, onLevel, len))
+            this.ccu3.getDeviceValue(link, 'LEVEL', (level) => this.addLevel(level, onLevel, len), (e) => onError(e))
         });
     }
 
     sendState(data){
         const _cb = (value) => {
             var links = value != null && value.map(v => v.RECEIVER) || []
+
+            const onError = (e) => {
+                console.log("ERROR:: No Levels from linked Device")
+                var state = {
+                    temperature: data.ACTUAL_TEMPERATURE || null,
+                    battery: data.OPERATING_VOLTAGE? Math.ceil(Math.min(data.OPERATING_VOLTAGE / 2.8 * 100, 100)): null,
+                    lowBattery: data.LOW_BAT,
+                    humidity: data.HUMIDITY,
+                    address: data.address,
+                    targetTemperature: data.SET_POINT_TEMPERATURE || null,
+                    windowState: data.WINDOW_STATE,
+                    ip: this.ip,
+                    rssi: data.RSSI_DEVICE,
+                    unreach: data.UNREACH,
+                }
+
+                try {
+                    let config = new Config().instance().getConfig();
+                    let nodeId = config.keys.find(k => k.type == "wth" && k.address == this.address).nodeId
+                    if (nodeId){
+                        try {
+                            this.drax.setState(nodeId, null, state, false)
+                        } catch (e) {
+                            console.log("SetStateError: ", e); console.log("NodeId: ", nodeId);
+                            console.log('force quit');
+                            process.exit(1);
+                        }
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            }
 
             const onLevel = () => {
                 var _level = this.levels.reduce((a, b) => a + b, 0) / this.levels.length;
@@ -177,7 +209,7 @@ class Wth extends GenericDevice {
                     lowBattery: data.LOW_BAT,
                     humidity: data.HUMIDITY,
                     address: data.address,
-                    level: _level != null? _level * 100: null,
+                    level: _level != undefined && _level != null? _level * 100: null,
                     targetTemperature: data.SET_POINT_TEMPERATURE || null,
                     windowState: data.WINDOW_STATE,
                     ip: this.ip,
@@ -218,7 +250,7 @@ class Wth extends GenericDevice {
                 }
             }
 
-            this.getLevels(links, onLevel)
+            this.getLevels(links, onLevel, onError)
         }
         this.integrateWithFalmot(_cb)        
     }
