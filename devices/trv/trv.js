@@ -5,7 +5,7 @@ const GenericDevice = require("../genericDevice");
 
 class Trv extends GenericDevice {
     constructor(address, client, ccu3, drax, sgtin, ip){
-        super()
+        super(address, client, ccu3, drax, sgtin, ip)
         this.data = {}
 
         this.address = address
@@ -24,6 +24,7 @@ class Trv extends GenericDevice {
                 let nodeId = config.keys.find(k => k.type == "trv" && k.address == this.address).nodeId
                 resolve()
             } catch (e) {
+                this.ccu3.addProcess()
                 console.log("Key missing! address: %s", this.address)
                 var node = {
                     id: 0,
@@ -47,7 +48,8 @@ class Trv extends GenericDevice {
                     let config = new Config().instance().getConfig();
                     config.keys.push(newKey)
                     this.updateConfig(config, () => resolve(), () => reject())
-                })
+                    this.ccu3.removeProcess()
+                })                
             }
         })
 

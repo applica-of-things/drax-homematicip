@@ -3,7 +3,9 @@ const { Config } = require("../config/configuration");
 const configPath = require("../options");
 
 class GenericDevice {
-    constructor(){}
+    constructor(address, client, ccu3, drax, sgtin, ip){
+        this.ccu3 = ccu3
+    }
 
     updateConfig(config, resolve = null, reject = null){
         var configuration = new Config().instance()
@@ -24,7 +26,9 @@ class GenericDevice {
 
     stateUnreach(response){
         console.log("UNREACHED:::", this.address)
-        process.exit(1);
+        if (!this.ccu3.isLock()){
+            process.exit(1);
+        }
     }
 
     handshake(){

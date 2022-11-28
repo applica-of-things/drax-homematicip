@@ -28,6 +28,29 @@ class CCU3 {
     this.responses = []
 
     this.threshold = CLOSE_PERCENTAGE_THRESHOLD
+
+    this.processes = 0
+  }
+
+  addProcess(){    
+    this.processes = this.processes + 1
+    console.log("INFO::PROCESS ADDED: ", this.processes)
+  }
+
+  removeProcess(){
+    this.processes = this.processes - 1
+    if (this.processes < 0){
+      this.processes = 0
+    }
+    console.log("INFO::PROCESS REMOVED: ", this.processes)
+  }
+
+  isLock(){
+    console.log("PROCESS::", this.processes)
+    if (this.processes != 0){
+      return true
+    }
+    return false
   }
 
   addEventListener(listener) {

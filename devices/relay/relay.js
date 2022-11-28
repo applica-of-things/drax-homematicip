@@ -24,6 +24,7 @@ class Relay extends GenericDevice {
                 let nodeId = config.keys.find(k => k.type == 'relay' && k.address == this.address).nodeId
                 resolve()
             } catch (e) {
+                this.ccu3.addProcess()
                 console.log("Key missing! address: %s", this.address)
                 var node = {
                     id: 0,
@@ -47,6 +48,7 @@ class Relay extends GenericDevice {
                     let config = new Config().instance().getConfig();
                     config.keys.push(newKey)
                     this.updateConfig(config, () => resolve(), () => reject())
+                    this.ccu3.removeProcess()
                 })
             }
         })
