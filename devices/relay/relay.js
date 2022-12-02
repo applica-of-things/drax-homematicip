@@ -54,12 +54,6 @@ class Relay extends GenericDevice {
         })
     }
 
-    stateEvent(response){
-        console.log("SEND STATE:::", this.address)
-        //this.sendState(response)
-        this.state()
-    }
-
     state() {
         var callback1 = (data) => {
             console.log("DATA0::", data)
