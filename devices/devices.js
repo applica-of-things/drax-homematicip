@@ -25,7 +25,7 @@ class Devices {
         this.drax = drax
     }
 
-    handshake(){
+    handshake(){        
         return this.listDevices.reduce((p, device) => {
             var dev = new FactoryDevice(this.client, this.ccu3, this.drax, this.sgtin, this.ip).getDevice(device);
             return p.then(() => {
@@ -35,7 +35,8 @@ class Devices {
     }
 
     state(){
-        return this.listDevices.reduce((p, device) => {
+        var _listDevices = this.listDevices.filter(d => d.type == 'HmIP-RCV-50' || d.type == 'gtw')
+        return _listDevices.reduce((p, device) => {
             var dev = new FactoryDevice(this.client, this.ccu3, this.drax, this.sgtin, this.ip).getDevice(device);
             return p.then(() => {
                 return dev != null ? dev.state() : Promise.resolve();
