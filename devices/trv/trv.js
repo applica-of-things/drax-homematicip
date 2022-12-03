@@ -141,9 +141,11 @@ class Trv extends GenericDevice {
             unreach: data.UNREACH,
         }
         if (data.SET_POINT_TEMPERATURE != null && data.SET_POINT_TEMPERATURE != undefined){
-            let state = new Config().instance().checkState("trv", this.address, data.SET_POINT_TEMPERATURE);
-            if (state !== null && state !== VALID_STATE){
-                this.setTargetTemperature(state)
+            let _state = new Config().instance().checkState("trv", this.address, data.SET_POINT_TEMPERATURE);
+            if (_state !== null && _state !== VALID_STATE){
+                this.setTargetTemperature(_state)
+                state.targetTemperature = _state
+                state.level = 0
             }
         }
 
