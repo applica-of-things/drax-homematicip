@@ -64,7 +64,7 @@ class Trv extends GenericDevice {
             let timestamp = relay.timestamp || 0
             let now = new Date().getTime()
 
-            if (index % relay.nodeAdresses.length == 0 || now - timestamp > 2 * 60 * 1000){
+            if (index % relay.nodeAdresses.length == 0 || now - timestamp > 3 * 60 * 1000){
                 actualAverage = 0
                 index = 0
             }
