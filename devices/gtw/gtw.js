@@ -1,4 +1,5 @@
 const { Config } = require("../../config/configuration");
+const { exec } = require("child_process");
 const { DELETE_FLAG_RESET } = require("../../homematic/flags");
 const GenericDevice = require("../genericDevice");
 
@@ -121,7 +122,8 @@ class Gtw extends GenericDevice {
 
     configuration(config){
         var scan = config.scan
-        var installMode = config.installMode        
+        var installMode = config.installMode
+        var reboot = config.reboot
 
         if (scan != null && scan == 1){
             this.scan()
@@ -130,7 +132,23 @@ class Gtw extends GenericDevice {
             this.ccu3.setInstallMode(true)
             setTimeout(() => this.scan(), 30000)
         }
+        if (reboot != null && reboot == 1){
+            this.reboot()
+        }
+    }
 
+    reboot(){
+        exec("/sbin/reboot", (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        })
     }
 }
 
