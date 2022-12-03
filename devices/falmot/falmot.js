@@ -151,12 +151,12 @@ class Falmot extends GenericDevice {
 
     turnOnRelay(relayAddress){
         new Config().instance().setState("relay", relayAddress, true);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        //this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
     }
 
     turnOffRelay(relayAddress){
         new Config().instance().setState("relay", relayAddress, false);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        //this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
     }
 
     stateUnreach(response){

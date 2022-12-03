@@ -2,6 +2,7 @@ const { Config } = require("../../config/configuration");
 const { DELETE_FLAG_RESET } = require("../../homematic/flags");
 const GenericDevice = require("../genericDevice");
 
+const _VER = 1.0
 
 class Gtw extends GenericDevice {
     constructor(address, client, ccu3, drax, sgtin, ip){
@@ -60,7 +61,8 @@ class Gtw extends GenericDevice {
     state(){
         var state = {
             connected: true,
-            ip: this.ip
+            ip: this.ip,
+            ver: _VER
         }
         try {
             let config = new Config().instance().getConfig();
@@ -93,7 +95,8 @@ class Gtw extends GenericDevice {
             var state = {
                 devices: JSON.stringify(this.data.devices),
                 connected: true,
-                ip: this.ip
+                ip: this.ip,
+                ver: _VER
             }
             try {
                 let config = new Config().instance().getConfig();
