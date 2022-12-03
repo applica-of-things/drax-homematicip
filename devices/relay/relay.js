@@ -83,6 +83,8 @@ class Relay extends GenericDevice {
             if (state !== null && state !== VALID_STATE){
                 this.setRelayState(state)
             }
+        } else {
+            this.setRelayState(false)
         }
 
         try {
