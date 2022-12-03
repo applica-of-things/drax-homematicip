@@ -3,7 +3,7 @@ const { exec } = require("child_process");
 const { DELETE_FLAG_RESET } = require("../../homematic/flags");
 const GenericDevice = require("../genericDevice");
 
-const _VER = "1.1"
+const _VER = "1.2"
 
 class Gtw extends GenericDevice {
     constructor(address, client, ccu3, drax, sgtin, ip){
