@@ -78,11 +78,9 @@ class Relay extends GenericDevice {
             state: data.STATE,
         }
 
-        if (data.STATE != null && data.STATE != undefined){
-            let state = new Config().instance().checkState("relay", this.address, data.STATE);
-            if (state !== null && state !== VALID_STATE){
-                this.setRelayState(state)
-            }
+        let state = new Config().instance().checkState("relay", this.address, data.STATE);
+        if (state !== null && state !== VALID_STATE){
+            this.setRelayState(state)
         }
 
         try {
