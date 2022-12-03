@@ -85,7 +85,7 @@ class Relay extends GenericDevice {
                 state.state = _state
             }
         } else {
-            this.setRelayState(false)
+            this.ccu3.setDeviceValue(this.address + ":3", 'STATE', false)
         }
 
         try {
