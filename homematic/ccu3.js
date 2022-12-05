@@ -3,7 +3,7 @@ var xmlrpc = require('homematic-xmlrpc');
 const { findIndex } = require('underscore');
 const _ = require("underscore")
 
-const CLOSE_PERCENTAGE_THRESHOLD = 5 //[%]
+const CLOSE_PERCENTAGE_THRESHOLD = 10 //[%]
 
 class CCU3 {
   constructor(clientHost = "localhost",
