@@ -230,9 +230,7 @@ class Wth extends GenericDevice {
                 if (data.SET_POINT_TEMPERATURE != null && data.SET_POINT_TEMPERATURE != undefined){
                     let _state = new Config().instance().checkState("wth", this.address, data.SET_POINT_TEMPERATURE);
                     if (_state !== null && _state !== VALID_STATE){
-                        if (data.UNREACH != true){
-                            this.setTargetTemperature(_state)
-                        }
+                        this.setTargetTemperature(_state)
                     }
                 }
 
