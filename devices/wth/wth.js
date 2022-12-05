@@ -146,7 +146,11 @@ class Wth extends GenericDevice {
     }
 
     stateUnreach(response){
-        console.log("UNREACHED:::", this.address)
+        console.log("UNREACHED! RETRYING", this.address)
+        let _state = new Config().instance().getState("wth", this.address);
+        if (_state !== null && _state !== VALID_STATE){
+            this.setTargetTemperature(_state)
+        }
     }
 
     addLevel(level, onLevel, len){

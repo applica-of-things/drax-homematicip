@@ -70,6 +70,14 @@ class Relay extends GenericDevice {
         this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({ ...d, address: this.address, type: 'HmIP-PCBS' }))
     }
 
+    stateUnreach(response){
+        console.log("UNREACHED! RETRYING", this.address)
+        let _state = new Config().instance().getState("relay", this.address);
+        if (_state !== null && _state !== VALID_STATE){
+            this.setRelayState(_state)
+        }
+    }
+
     sendState(data) {
         var state = {
             rssi: data.RSSI_DEVICE,
