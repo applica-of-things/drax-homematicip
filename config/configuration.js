@@ -141,6 +141,14 @@ class Config {
         return null
     }
 
+    getState(type, address){
+        var deviceState = stateConfig.state.find(s => s.type == type && s.address == address)
+        if (deviceState){
+            return deviceState.value
+        }
+        return null
+    }
+
     setState(type, address, value){
         var obj = null
         try {

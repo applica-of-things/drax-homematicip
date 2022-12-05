@@ -127,6 +127,14 @@ class Trv extends GenericDevice {
         this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-eTRV-B'}))
     }
 
+    stateUnreach(response){
+        console.log("UNREACHED! RETRYING", this.address)
+        let _state = new Config().instance().getState("trv", this.address);
+        if (_state !== null && _state !== VALID_STATE){
+            this.setTargetTemperature(_state)
+        }
+    }
+
     sendState(data){
         var state = {
             temperature: data.ACTUAL_TEMPERATURE || null,

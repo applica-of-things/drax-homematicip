@@ -26,10 +26,6 @@ class GenericDevice {
 
     stateUnreach(response){
         console.log("UNREACHED:::", this.address)
-        if (!this.ccu3.isLock()){
-            console.log("PROCESS EXIT")
-            //process.exit(1);
-        }
     }
 
     handshake(){
