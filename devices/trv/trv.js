@@ -143,7 +143,7 @@ class Trv extends GenericDevice {
             address: data.address,
             level: data.LEVEL != null? data.LEVEL * 100: null,
             targetTemperature: data.SET_POINT_TEMPERATURE || null,
-            windowState: data.WINDOW_STATE,
+            windowState: 1, //data.WINDOW_STATE,
             ip: this.ip,
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
