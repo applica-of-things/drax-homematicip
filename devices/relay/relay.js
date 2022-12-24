@@ -85,10 +85,12 @@ class Relay extends GenericDevice {
             ip: this.ip,
             state: data.STATE,
         }
-
+        console.log("STATEEEEE:::", state)
         if (data.STATE != null && data.STATE != undefined){
             let _state = new Config().instance().checkState("relay", this.address, data.STATE);
+            console.log("STATEEEEE_relay:::", _state)
             if (_state !== null && _state !== VALID_STATE){
+                console.log("STATEEEEE_relay_after:::", _state)
                 this.setRelayState(_state)
             }
         } else {
