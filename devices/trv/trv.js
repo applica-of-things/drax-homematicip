@@ -97,12 +97,12 @@ class Trv extends GenericDevice {
 
     turnOnRelay(relayAddress){
         new Config().instance().setState("relay", relayAddress, true);
-        //this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
     }
 
     turnOffRelay(relayAddress){
         new Config().instance().setState("relay", relayAddress, false);
-        //this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
     }
 
     stateEvent(response){
@@ -148,7 +148,7 @@ class Trv extends GenericDevice {
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
         }
-        if (data.SET_POINT_TEMPERATURE != null && data.SET_POINT_TEMPERATURE != undefined){
+        if (data.SET_POINT_TEMPERATURE !== null && data.SET_POINT_TEMPERATURE !== undefined){
             let _state = new Config().instance().checkState("trv", this.address, data.SET_POINT_TEMPERATURE);
             if (_state !== null && _state !== VALID_STATE && data.WINDOW_STATE != 1){
                 this.setTargetTemperature(_state)

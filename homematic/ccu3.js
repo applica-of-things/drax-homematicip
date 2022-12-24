@@ -103,7 +103,7 @@ class CCU3 {
             response["channels"] = response["channels"]? [...response["channels"], channel] : [channel]
           }          
           var key = call.params[2]
-          var value = call.params[3]          
+          var value = call.params[3]
           response[key] = value;
         });
         if (this.responses.find(r => r.address == address) == null){
