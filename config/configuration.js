@@ -142,6 +142,12 @@ class Config {
     }
 
     getState(type, address){
+        var stateConfig = null
+        try {
+            stateConfig = require(statePath)
+        } catch (e){
+            stateConfig = {state: []}
+        }
         var deviceState = stateConfig.state.find(s => s.type == type && s.address == address)
         if (deviceState){
             return deviceState.value
