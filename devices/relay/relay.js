@@ -54,7 +54,7 @@ class Relay extends GenericDevice {
         })
     }
 
-    state() {
+    state(stEvnt = false) {
         var callback1 = (data) => {
             console.log("DATA0::", data)
 
@@ -62,7 +62,7 @@ class Relay extends GenericDevice {
                 this.data = { ...this.data, ...data }
                 console.log("DATA3::", data)
 
-                this.sendState(this.data)
+                this.sendState(this.data, stEvnt)
             }
             this.data = { ...this.data, ...data }
             this.ccu3.getDeviceValues(this.address + ":3", (d) => callback2({ ...d, address: this.address, type: 'HmIP-PCBS' }))
@@ -78,7 +78,7 @@ class Relay extends GenericDevice {
         }
     }
 
-    sendState(data) {
+    sendState(data, stEvnt = false) {
         var state = {
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
@@ -86,7 +86,7 @@ class Relay extends GenericDevice {
             state: data.STATE,
         }
         console.log("STATEEEEE:::", state)
-        if (data.STATE !== null && data.STATE !== undefined){
+        if (stEvnt === false && data.STATE !== null && data.STATE !== undefined){
             let _state = new Config().instance().checkState("relay", this.address, data.STATE);
             console.log("STATEEEEE_relay:::", _state)
             if (_state !== null && _state !== VALID_STATE){
@@ -129,7 +129,10 @@ class Relay extends GenericDevice {
                 let conf = new Config().instance().getConfig();
                 let relay = conf.keys.find(k => k.type == "relay" && k.address == this.address)
                 if (relay){
-                    new Config().instance().updateRelay({...relay, nodeAdresses: nodeAdresses, average: 0, threshold})
+                    var _nodeAddresses = nodeAdresses.map(na => {
+                        return {address: na, openValve: 0}
+                    })
+                    new Config().instance().updateRelay({...relay, nodeAdresses: _nodeAddresses, average: 0, threshold})
                     this.setRelayState(false)
                 }
             } catch (e) {
@@ -139,7 +142,7 @@ class Relay extends GenericDevice {
 
         if (permanentOff){
             try {
-                let relay = new Config().instance().getRelayAverage(this.address);
+                let relay = new Config().instance().getRelayFromAddress(this.address);
                 if (relay){
                     relay.permanentOff = parseInt(permanentOff)
                     new Config().instance().updateRelay(relay)
@@ -156,7 +159,7 @@ class Relay extends GenericDevice {
 
         if (threshold){
             try {
-                let relay = new Config().instance().getRelayAverage(this.address);
+                let relay = new Config().instance().getRelayFromAddress(this.address);
                 if (relay){
                     relay.threshold = threshold
                     new Config().instance().updateRelay(relay)

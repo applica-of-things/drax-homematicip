@@ -59,65 +59,19 @@ class Wth extends GenericDevice {
 
     }
 
-    // updateAndCheckRelay(level){
-    //     let relay = new Config().instance().getRelayAverageFromAddress(this.address);
-    //     console.log("RELAY: ", relay)
-    //     if (relay){
-    //         let actualAverage = relay.average || 0
-    //         let index = relay.index || 0
-    //         let timestamp = relay.timestamp || 0
-    //         let now = new Date().getTime()
-
-    //         if (index % relay.nodeAdresses.length == 0 || now - timestamp > 2 * 60 * 1000){
-    //             actualAverage = 0
-    //             index = 0
-    //         }
-
-    //         if (level != 0){
-    //             if (relay.nodeAdresses.length > 1){
-    //                 actualAverage = actualAverage + level / relay.nodeAdresses.length
-    //             }
-    //         }
-    //         relay.average = actualAverage
-    //         relay.index = index + 1
-    //         relay.timestamp = new Date().getTime()
-    //         new Config().instance().updateRelay(relay)
-    //         if (relay.index % relay.nodeAdresses.length == 0){                
-    //             if (relay.permanentOff){
-    //                 this.turnOffRelay(relay.address)
-    //             } else {
-    //                 console.log("AVERAGE: ", relay.average)
-    //                 if (relay.average > this.ccu3.getThreshold()){
-    //                     this.turnOnRelay(relay.address)
-    //                 } else {
-    //                     this.turnOffRelay(relay.address)
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    // turnOnRelay(relayAddress){
-    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
-    // }
-
-    // turnOffRelay(relayAddress){
-    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
-    // }
-
     stateEvent(response){
         console.log("SEND STATE:::", this.address)
         //this.sendState(response)
-        this.state()
+        this.state(true)
     }
 
-    state(){
+    state(stEvnt = false){
         var callback1 = (data) => {
 
             var callback2 = (data) => {
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
-                this.sendState(this.data)
+                this.sendState(this.data, stEvnt)
             }
 
             this.data = {...this.data, ...data}
@@ -171,7 +125,7 @@ class Wth extends GenericDevice {
         });
     }
 
-    sendState(data){
+    sendState(data, stEvnt = false){
         const _cb = (value) => {
             var links = value != null && value.map(v => v.RECEIVER) || []
 
@@ -231,11 +185,13 @@ class Wth extends GenericDevice {
                 //     this.updateAndCheckRelay(_level * 100)
                 // }
 
-                if (data.SET_POINT_TEMPERATURE !== null && data.SET_POINT_TEMPERATURE !== undefined){
+                if (stEvnt === false && data.SET_POINT_TEMPERATURE !== null && data.SET_POINT_TEMPERATURE !== undefined){
                     let _state = new Config().instance().checkState("wth", this.address, data.SET_POINT_TEMPERATURE);
                     if (_state !== null && _state !== VALID_STATE && data.WINDOW_STATE != 1){
                         this.setTargetTemperature(_state)
                     }
+                } else if (stEvnt === true){
+                    new Config().instance().setState("wth", this.address, data.SET_POINT_TEMPERATURE);
                 }
 
                 try {

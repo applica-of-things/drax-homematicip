@@ -56,36 +56,25 @@ class Trv extends GenericDevice {
     }
 
     updateAndCheckRelay(level){
-        let relay = new Config().instance().getRelayAverageFromAddress(this.address);
+        let relay = new Config().instance().getRelayFromNodeAddress(this.address);
         console.log("RELAY: ", relay)
         if (relay){
-            let actualAverage = relay.average || 0
-            let index = relay.index || 0
-            let timestamp = relay.timestamp || 0
-            let now = new Date().getTime()
+            var _nodeIdx = relay.nodeAdresses.findIndex(na => na.address == this.address)
 
-            if (index % relay.nodeAdresses.length == 0 || now - timestamp > 3 * 60 * 1000){
-                actualAverage = 0
-                index = 0
-            }
+            if (_nodeIdx >= 0){
+                relay.nodeAdresses[_nodeIdx].openValve = parseInt(level)
+                var levels = relay.nodeAdresses.map(na => na.openValve)
 
-            if (level != 0){
-                if (relay.nodeAdresses.length > 1){
-                    actualAverage = actualAverage + level / relay.nodeAdresses.length
-                } else if (relay.nodeAdresses.length == 1){
-                    actualAverage = level
-                }
-            }
-            relay.average = actualAverage
-            relay.index = index + 1
-            relay.timestamp = new Date().getTime()
-            new Config().instance().updateRelay(relay)
-            if (relay.index % relay.nodeAdresses.length == 0){                
+                const sum = levels.reduce((a, b) => a + b, 0);
+                const avg = (sum / levels.length) || 0;
+                relay.average = avg
+
+                new Config().instance().updateRelay(relay)
                 if (relay.permanentOff){
                     this.turnOffRelay(relay.address)
                 } else {
-                    console.log("AVERAGE: ", relay.average)
-                    if (relay.average > this.ccu3.getThreshold()){
+                    console.log("AVERAGE: ", avg)
+                    if (avg > this.ccu3.getThreshold()){
                         this.turnOnRelay(relay.address)
                     } else {
                         this.turnOffRelay(relay.address)
@@ -96,28 +85,34 @@ class Trv extends GenericDevice {
     }
 
     turnOnRelay(relayAddress){
-        new Config().instance().setState("relay", relayAddress, true);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        let _state = new Config().instance().getState("relay", relayAddress);
+        if (_state !== null && _state !== VALID_STATE && _state !== true){
+            new Config().instance().setState("relay", relayAddress, true);
+            this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        }        
     }
 
     turnOffRelay(relayAddress){
-        new Config().instance().setState("relay", relayAddress, false);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        let _state = new Config().instance().getState("relay", relayAddress);
+        if (_state !== null && _state !== VALID_STATE && _state !== false){
+            new Config().instance().setState("relay", relayAddress, false);
+            this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        }
     }
 
     stateEvent(response){
         console.log("SEND STATE:::", this.address)
         //this.sendState(response)
-        this.state()
+        this.state(true)
     }
 
-    state(){
+    state(stEvnt = false){
         var callback1 = (data) => {
 
             var callback2 = (data) => {
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
-                this.sendState(this.data)
+                this.sendState(this.data, stEvnt)
             }
 
             this.data = {...this.data, ...data}
@@ -135,7 +130,7 @@ class Trv extends GenericDevice {
         }
     }
 
-    sendState(data){
+    sendState(data, stEvnt = false){
         var state = {
             temperature: data.ACTUAL_TEMPERATURE || null,
             battery: data.OPERATING_VOLTAGE? Math.ceil(Math.min(data.OPERATING_VOLTAGE / 2.8 * 100, 100)): null,
@@ -148,13 +143,15 @@ class Trv extends GenericDevice {
             rssi: data.RSSI_DEVICE,
             unreach: data.UNREACH,
         }
-        if (data.SET_POINT_TEMPERATURE !== null && data.SET_POINT_TEMPERATURE !== undefined){
+        if (stEvnt === false && data.SET_POINT_TEMPERATURE !== null && data.SET_POINT_TEMPERATURE !== undefined){
             let _state = new Config().instance().checkState("trv", this.address, data.SET_POINT_TEMPERATURE);
             if (_state !== null && _state !== VALID_STATE && data.WINDOW_STATE != 1){
                 this.setTargetTemperature(_state)
                 state.targetTemperature = _state
                 state.level = 0
             }
+        } else if (stEvnt === true){
+            new Config().instance().setState("trv", this.address, data.SET_POINT_TEMPERATURE);
         }
 
         if (data.LEVEL != null){

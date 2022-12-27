@@ -57,10 +57,10 @@ class Falmot extends GenericDevice {
 
     stateEvent(response){
         console.log("SEND STATE:::", this.address)
-        this.state()
+        this.state(true)
     }
 
-    channelCallback(data){     
+    channelCallback(data, stEvnt = false){     
         var _cb = null
         if (this.iteractions <= 11){
             _cb = this.channelCallback.bind(this)
@@ -68,7 +68,7 @@ class Falmot extends GenericDevice {
             _cb = function(data){
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
-                this.sendState(this.data)
+                this.sendState(this.data, stEvnt)
             }.bind(this)
         }
 
@@ -78,68 +78,32 @@ class Falmot extends GenericDevice {
         this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => _cb({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
     }
 
-    state(){
+    state(stEvnt = false){
         this.iteractions++
         console.log("INTERACTIONS::", this.iteractions)
-        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback({...d, address: this.address, type: 'HmIP-FALMOT-C12'}))
+        this.ccu3.getDeviceValues(this.address + ":" + this.iteractions, (d) => this.channelCallback({...d, address: this.address, type: 'HmIP-FALMOT-C12'}, stEvnt))
     }
 
-    // updateAndCheckRelay(level){
-    //     let relay = new Config().instance().getRelayAverageFromAddress(this.address);
-    //     console.log("RELAY: ", relay)
-    //     console.log("AVERAGE: ", level)
-    //     if (relay){
-    //         if (relay.permanentOff){
-    //             this.turnOffRelay(relay.address)
-    //         } else {                
-    //             if (level * 100 > 30){
-    //                 this.turnOnRelay(relay.address)
-    //             } else {
-    //                 this.turnOffRelay(relay.address)
-    //             }
-    //         }
-    //     }
-    // }
-
-    // turnOnRelay(relayAddress){
-    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
-    // }
-
-    // turnOffRelay(relayAddress){
-    //     this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
-    // }
-
     updateAndCheckRelay(level){
-        let relay = new Config().instance().getRelayAverageFromAddress(this.address);
+        let relay = new Config().instance().getRelayFromNodeAddress(this.address);
         console.log("RELAY: ", relay)
         if (relay){
-            let actualAverage = relay.average || 0
-            let index = relay.index || 0
-            let timestamp = relay.timestamp || 0
-            let now = new Date().getTime()
+            var _nodeIdx = relay.nodeAdresses.findIndex(na => na.address == this.address)
 
-            if (index % relay.nodeAdresses.length == 0 || now - timestamp > 2 * 60 * 1000){
-                actualAverage = 0
-                index = 0
-            }
+            if (_nodeIdx >= 0){
+                relay.nodeAdresses[_nodeIdx].openValve = parseInt(level)
+                var levels = relay.nodeAdresses.map(na => na.openValve)
 
-            if (level != 0){
-                if (relay.nodeAdresses.length > 1){
-                    actualAverage = actualAverage + level / relay.nodeAdresses.length
-                } else if (relay.nodeAdresses.length == 1){
-                    actualAverage = level
-                }
-            }
-            relay.average = actualAverage
-            relay.index = index + 1
-            relay.timestamp = new Date().getTime()
-            new Config().instance().updateRelay(relay)
-            if (relay.index % relay.nodeAdresses.length == 0){                
+                const sum = levels.reduce((a, b) => a + b, 0);
+                const avg = (sum / levels.length) || 0;
+                relay.average = avg
+
+                new Config().instance().updateRelay(relay)
                 if (relay.permanentOff){
                     this.turnOffRelay(relay.address)
                 } else {
-                    console.log("AVERAGE: ", relay.average)
-                    if (relay.average > this.ccu3.getThreshold()){
+                    console.log("AVERAGE: ", avg)
+                    if (avg > this.ccu3.getThreshold()){
                         this.turnOnRelay(relay.address)
                     } else {
                         this.turnOffRelay(relay.address)
@@ -150,20 +114,26 @@ class Falmot extends GenericDevice {
     }
 
     turnOnRelay(relayAddress){
-        new Config().instance().setState("relay", relayAddress, true);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        let _state = new Config().instance().getState("relay", relayAddress);
+        if (_state !== null && _state !== VALID_STATE && _state !== true){
+            new Config().instance().setState("relay", relayAddress, true);
+            this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', true)
+        }        
     }
 
     turnOffRelay(relayAddress){
-        new Config().instance().setState("relay", relayAddress, false);
-        this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        let _state = new Config().instance().getState("relay", relayAddress);
+        if (_state !== null && _state !== VALID_STATE && _state !== false){
+            new Config().instance().setState("relay", relayAddress, false);
+            this.ccu3.setDeviceValue(relayAddress + ":3", 'STATE', false)
+        }
     }
 
     stateUnreach(response){
         console.log("UNREACHED:::", this.address)
     }
 
-    sendState(data){
+    sendState(data, stEvnt = false){
         var state = data
         var _levels = []
         for (var i = 1; i <= 12; i++){

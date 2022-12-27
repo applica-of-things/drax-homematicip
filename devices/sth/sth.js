@@ -56,10 +56,10 @@ class Sth extends GenericDevice {
 
     stateEvent(response){
         //this.sendState(response)
-        this.state()
+        this.state(true)
     }
 
-    sendState(data){
+    sendState(data, stEvnt = false){
         var state = {
             temperature: data.ACTUAL_TEMPERATURE || null,
             battery: data.OPERATING_VOLTAGE != null? Math.min(data.OPERATING_VOLTAGE / 2.8 * 100, 100) : null,
@@ -90,13 +90,13 @@ class Sth extends GenericDevice {
         }
     }
 
-    state(){
+    state(stEvnt = false){
         var callback1 = (data) => {
             var callback2 = (data) => {
                 this.data = {...this.data, ...data}
                 console.log("DATA::", this.data)
 
-                this.sendState(this.data)
+                this.sendState(this.data, stEvnt)
             }
             this.data = {...this.data, ...data}
             this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))

@@ -106,17 +106,25 @@ class Config {
         fs.writeFileSync(relaysPath, JSON.stringify(obj))
     }
 
-    getRelayAverage(address){
+    getRelayFromAddress(address){
         var obj = require(relaysPath)
         var relays = obj.relays
         var relay = relays.find(r => r.address == address)
         return relay
     }
 
-    getRelayAverageFromAddress(address){
+    getRelayFromNodeAddress(address){
         var obj = require(relaysPath)
-        var relays = obj.relays
-        return relays.find(r => r.nodeAdresses && r.nodeAdresses.includes(address))
+        var relays = obj.relays        
+        return relays.find(r => {
+            if (r.nodeAdresses){
+                var _nodes = r.nodeAdresses.map(n => n.address)
+                if (_nodes.includes(address)){
+                    return true
+                }
+            }
+            return false
+        })
     }
 
     getConfig(){
