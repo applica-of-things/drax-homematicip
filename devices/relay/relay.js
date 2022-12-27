@@ -132,7 +132,7 @@ class Relay extends GenericDevice {
                     var _nodeAddresses = nodeAdresses.map(na => {
                         return {address: na, openValve: 0}
                     })
-                    new Config().instance().updateRelay({...relay, nodeAdresses: _nodeAddresses, average: 0, threshold})
+                    new Config().instance().updateRelay({...relay, nodeAdresses: _nodeAddresses, average: 0, permanentOff: 1})
                     this.setRelayState(false)
                 }
             } catch (e) {
