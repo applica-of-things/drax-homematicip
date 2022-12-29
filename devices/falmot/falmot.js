@@ -1,4 +1,4 @@
-const { Config } = require("../../config/configuration");
+const { Config, VALID_STATE } = require("../../config/configuration");
 const GenericDevice = require("../genericDevice");
 
 class Falmot extends GenericDevice {
