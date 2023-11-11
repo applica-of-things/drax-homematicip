@@ -56,7 +56,19 @@ class Sth extends GenericDevice {
 
     stateEvent(response){
         //this.sendState(response)
-        this.state(true)
+        //this.state(true)
+        var callback1 = (data) => {
+        var callback2 = (data) => {
+        this.data = {...this.data, ...data}
+        console.log("DATA::", this.data)
+
+        this.sendState(this.data, true)
+        }
+            this.data = {...this.data, ...data}
+            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))
+        }
+        this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-STH'}))
+        this.ccu3.setManualMode(this.address + ":1")
     }
 
     sendState(data, stEvnt = false){
@@ -91,18 +103,18 @@ class Sth extends GenericDevice {
     }
 
     state(stEvnt = false){
-        var callback1 = (data) => {
-            var callback2 = (data) => {
-                this.data = {...this.data, ...data}
-                console.log("DATA::", this.data)
+        // var callback1 = (data) => {
+        //     var callback2 = (data) => {
+        //         this.data = {...this.data, ...data}
+        //         console.log("DATA::", this.data)
 
-                this.sendState(this.data, stEvnt)
-            }
-            this.data = {...this.data, ...data}
-            this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))
-        }
-        this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-STH'}))
-        this.ccu3.setManualMode(this.address + ":1")
+        //         this.sendState(this.data, stEvnt)
+        //     }
+        //     this.data = {...this.data, ...data}
+        //     this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))
+        // }
+        // this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-STH'}))
+        // this.ccu3.setManualMode(this.address + ":1")
     }
 
     configuration(config){
