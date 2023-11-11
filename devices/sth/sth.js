@@ -68,7 +68,7 @@ class Sth extends GenericDevice {
             this.ccu3.getDeviceValues(this.address + ":1", (d) => callback2({...d, address: this.address, type: 'HmIP-STH'}))
         }
         this.ccu3.getDeviceValues(this.address + ":0", (d) => callback1({...d, address: this.address, type: 'HmIP-STH'}))
-        this.ccu3.setManualMode(this.address + ":1")
+        //this.ccu3.setManualMode(this.address + ":1")
     }
 
     sendState(data, stEvnt = false){
